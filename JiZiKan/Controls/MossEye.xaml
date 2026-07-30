@@ -1,0 +1,50 @@
+<UserControl x:Class="JiZiKan.Controls.MossEye"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="Transparent">
+    <Grid x:Name="Root">
+        <!-- 外环刻度（TOF 雷达组传感器阵列） -->
+        <Canvas x:Name="RingCanvas"/>
+
+        <!-- 旋转扫描弧 -->
+        <Path x:Name="Arc" Stretch="None">
+            <Path.Stroke>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                    <GradientStop Color="#00FF1A1A" Offset="0"/>
+                    <GradientStop Color="#FFFF1A1A" Offset="1"/>
+                </LinearGradientBrush>
+            </Path.Stroke>
+            <Path.StrokeThickness>2</Path.StrokeThickness>
+            <Path.RenderTransform>
+                <RotateTransform x:Name="ArcRotate" CenterX="0" CenterY="0"/>
+            </Path.RenderTransform>
+        </Path>
+
+        <!-- 眼球本体 -->
+        <Ellipse x:Name="Ball" Stroke="#3A0A0A" StrokeThickness="1">
+            <Ellipse.Fill>
+                <RadialGradientBrush GradientOrigin="0.5,0.5" Center="0.5,0.5" RadiusX="0.5" RadiusY="0.5">
+                    <GradientStop Color="#1A0000" Offset="0"/>
+                    <GradientStop Color="#0A0000" Offset="0.7"/>
+                    <GradientStop Color="#000000" Offset="1"/>
+                </RadialGradientBrush>
+            </Ellipse.Fill>
+        </Ellipse>
+
+        <!-- 内圈装饰 -->
+        <Ellipse x:Name="InnerRing" Stroke="#5A1010" StrokeThickness="0.5" Opacity="0.6"/>
+
+        <!-- 红色瞳孔（ToF 激光雷达组，MOSS 最核心标志） -->
+        <Ellipse x:Name="Pupil" Fill="{StaticResource RedBrush}">
+            <Ellipse.Effect>
+                <DropShadowEffect x:Name="PupilGlow" Color="#FF1A1A" BlurRadius="30" ShadowDepth="0" Opacity="1"/>
+            </Ellipse.Effect>
+            <Ellipse.RenderTransform>
+                <ScaleTransform x:Name="PupilScale" CenterX="0" CenterY="0"/>
+            </Ellipse.RenderTransform>
+        </Ellipse>
+
+        <!-- 瞳孔高光 -->
+        <Ellipse x:Name="Glint" Fill="#FFEEEE" Opacity="0.85"/>
+    </Grid>
+</UserControl>

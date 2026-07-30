@@ -1,0 +1,177 @@
+<Window x:Class="JiZiKan.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ctl="clr-namespace:JiZiKan.Controls"
+        Title="MOSS // 550W" Height="800" Width="1440"
+        WindowStyle="None" WindowState="Maximized"
+        Background="{StaticResource BgBrush}"
+        WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <Style x:Key="NavBtn" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+            <Setter Property="FontFamily" Value="{StaticResource MonoFont}"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Padding" Value="0,11,0,11"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <Rectangle x:Name="ActiveMark" Width="3" HorizontalAlignment="Left" Fill="{StaticResource RedBrush}" Opacity="0"/>
+                            <Border x:Name="Bg" Background="Transparent"/>
+                            <ContentPresenter Margin="24,0,0,0" VerticalAlignment="Center"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bg" Property="Background" Value="#14FF1A1A"/>
+                                <Setter Property="Foreground" Value="{StaticResource RedBrush}"/>
+                            </Trigger>
+                            <Trigger Property="Tag" Value="Active">
+                                <Setter TargetName="ActiveMark" Property="Opacity" Value="1"/>
+                                <Setter TargetName="Bg" Property="Background" Value="#1AFF1A1A"/>
+                                <Setter Property="Foreground" Value="{StaticResource RedBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="320"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- ===== 左侧导航 ===== -->
+        <Grid Grid.Column="0" Background="#080A0D">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="64"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- LOGO -->
+            <StackPanel Grid.Row="0" VerticalAlignment="Center" Margin="24,0,0,0">
+                <TextBlock Text="MOSS" FontFamily="{StaticResource MonoFont}" FontSize="22" FontWeight="Bold"
+                           Foreground="{StaticResource RedBrush}">
+                    <TextBlock.Effect>
+                        <DropShadowEffect Color="#FF1A1A" BlurRadius="12" ShadowDepth="0" Opacity="0.8"/>
+                    </TextBlock.Effect>
+                </TextBlock>
+                <TextBlock Text="550W SMART QUANTUM" FontFamily="{StaticResource MonoFont}" FontSize="9"
+                           Foreground="{StaticResource TextBrush}" Margin="0,2,0,0"/>
+            </StackPanel>
+
+            <!-- 导航菜单 -->
+            <StackPanel Grid.Row="1" Margin="0,8,0,0">
+                <Button x:Name="NavDashboard" Style="{StaticResource NavBtn}" Tag="Active" Click="Nav_Click" Content="▸ MONITOR"/>
+                <Button x:Name="NavNetwork" Style="{StaticResource NavBtn}" Click="Nav_Click" Content="▸ NETWORK TOPOLOGY"/>
+                <Button x:Name="NavDigital" Style="{StaticResource NavBtn}" Click="Nav_Click" Content="▸ DIGITAL LIFE"/>
+                <Button x:Name="NavCrisis" Style="{StaticResource NavBtn}" Click="Nav_Click" Content="▸ CRISIS FORECAST"/>
+                <Button x:Name="NavKey" Style="{StaticResource NavBtn}" Click="Nav_Click" Content="▸ KEY AUTH"/>
+                <Button x:Name="NavDialog" Style="{StaticResource NavBtn}" Click="Nav_Click" Content="▸ MOSS DIALOG"/>
+            </StackPanel>
+
+            <!-- 底部 UEG 标识 -->
+            <StackPanel Grid.Row="2" Margin="24,0,24,16">
+                <Border BorderBrush="{StaticResource GridBrush}" BorderThickness="0,1,0,0" Margin="0,0,0,12"/>
+                <TextBlock Text="UNITED EARTH GOVERNMENT" FontFamily="{StaticResource MonoFont}" FontSize="9"
+                           Foreground="{StaticResource TextBrush}"/>
+                <TextBlock Text="WANDERING EARTH PROJECT" FontFamily="{StaticResource MonoFont}" FontSize="9"
+                           Foreground="{StaticResource TextBrush}" Margin="0,2,0,0"/>
+                <TextBlock x:Name="SysStatus" Text="● ONLINE" FontFamily="{StaticResource MonoFont}" FontSize="9"
+                           Foreground="{StaticResource RedBrush}" Margin="0,8,0,0"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- ===== 中央内容区 ===== -->
+        <Grid Grid.Column="1" Background="{StaticResource BgBrush}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="56"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="40"/>
+            </Grid.RowDefinitions>
+
+            <!-- 顶部标题栏 -->
+            <Border Grid.Row="0" BorderBrush="{StaticResource GridBrush}" BorderThickness="0,0,0,1">
+                <Grid Margin="32,0">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock x:Name="PageTitle" Text="MONITOR // GLOBAL STATUS" FontFamily="{StaticResource MonoFont}"
+                                   FontSize="14" FontWeight="Bold" Foreground="{StaticResource RedBrush}" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="PageSub" Text="   行星发动机网络 / 地球状态 / 量子核心" FontFamily="{StaticResource MonoFont}"
+                                   FontSize="10" Foreground="{StaticResource TextBrush}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <TextBlock x:Name="TopClock" Text="2075-01-01 00:00:00" FontFamily="{StaticResource MonoFont}"
+                                   FontSize="11" Foreground="{StaticResource TextBrush}"/>
+                        <TextBlock Text=" | " Foreground="{StaticResource GridBrush}"/>
+                        <TextBlock Text="QV 8192" FontFamily="{StaticResource MonoFont}" FontSize="11" Foreground="{StaticResource RedBrush}"/>
+                        <TextBlock Text=" | " Foreground="{StaticResource GridBrush}"/>
+                        <Button x:Name="CloseBtn" Content="×" Width="28" Height="28" Background="Transparent" BorderThickness="0"
+                                Foreground="{StaticResource TextBrush}" FontSize="18" Cursor="Hand" Click="CloseBtn_Click"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- 页面容器 -->
+            <Grid Grid.Row="1" x:Name="PageHost" Margin="0,0,0,0"/>
+
+            <!-- 底部状态栏 -->
+            <Border Grid.Row="2" BorderBrush="{StaticResource GridBrush}" BorderThickness="0,1,0,0">
+                <Grid Margin="32,0">
+                    <TextBlock x:Name="BottomStatus" Text="MOSS // 延续人类文明的最优选择" FontFamily="{StaticResource MonoFont}"
+                               FontSize="10" Foreground="{StaticResource TextBrush}" VerticalAlignment="Center"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <TextBlock x:Name="LoadCpu" Text="CPU 12%" FontFamily="{StaticResource MonoFont}" FontSize="10"
+                                   Foreground="{StaticResource TextBrush}" Margin="0,0,16,0"/>
+                        <TextBlock x:Name="LoadQubit" Text="QUBIT 8192/8192" FontFamily="{StaticResource MonoFont}" FontSize="10"
+                                   Foreground="{StaticResource RedBrush}" Margin="0,0,16,0"/>
+                        <TextBlock x:Name="LoadNet" Text="NET 1.2Tbps" FontFamily="{StaticResource MonoFont}" FontSize="10"
+                                   Foreground="{StaticResource TextBrush}"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- ===== 右侧 MOSS 之眼 ===== -->
+        <Grid Grid.Column="2" Background="#080A0D">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0" VerticalAlignment="Center">
+                <ctl:MossEye x:Name="SideEye" Width="200" Height="200" HorizontalAlignment="Center"/>
+                <TextBlock Text="MOSS // OBSERVING" FontFamily="{StaticResource MonoFont}" FontSize="10"
+                           Foreground="{StaticResource RedBrush}" HorizontalAlignment="Center" Margin="0,16,0,0">
+                    <TextBlock.Effect>
+                        <DropShadowEffect Color="#FF1A1A" BlurRadius="8" ShadowDepth="0" Opacity="0.7"/>
+                    </TextBlock.Effect>
+                </TextBlock>
+                <Border BorderBrush="{StaticResource GridBrush}" BorderThickness="0,1,0,0" Margin="24,20,24,0" Padding="0,12,0,0">
+                    <ctl:DataStream Height="180"/>
+                </Border>
+            </StackPanel>
+
+            <Border Grid.Row="1" BorderBrush="{StaticResource GridBrush}" BorderThickness="0,1,0,0" Margin="0,0,0,0" Padding="20,12,20,12">
+                <StackPanel>
+                    <TextBlock Text="QUICK COMMANDS" Style="{StaticResource HudLabel}" Margin="0,0,0,8"/>
+                    <Button x:Name="CmdReboot" Content="REBOOT 550W" Style="{StaticResource NavBtn}" Padding="0,6,0,6" Click="CmdReboot_Click"/>
+                    <Button x:Name="CmdKey" Content="KEY AUTH DEMO" Style="{StaticResource NavBtn}" Padding="0,6,0,6" Click="CmdKey_Click"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- 四角 HUD -->
+        <Path Data="M0,20 L0,0 L20,0" Stroke="{StaticResource RedBrush}" StrokeThickness="1"
+              HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,0,0" Grid.ColumnSpan="1"/>
+        <Path Data="M20,0 L0,0 L0,20" Stroke="{StaticResource RedBrush}" StrokeThickness="1"
+              HorizontalAlignment="Right" VerticalAlignment="Top" Grid.Column="2"/>
+    </Grid>
+</Window>

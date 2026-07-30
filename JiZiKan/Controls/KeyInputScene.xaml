@@ -1,0 +1,229 @@
+<UserControl x:Class="JiZiKan.Controls.KeyInputScene"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource BgBrush}"
+             FontFamily="{StaticResource MonoFont}">
+    <UserControl.Resources>
+        <!-- 数字键盘按键：红色边框 / 黑底 / 按下反色 -->
+        <Style x:Key="KeyButton" TargetType="Button">
+            <Setter Property="FontFamily" Value="{StaticResource MonoFont}"/>
+            <Setter Property="FontSize" Value="22"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="{StaticResource RedBrightBrush}"/>
+            <Setter Property="Background" Value="#0A0C10"/>
+            <Setter Property="BorderBrush" Value="{StaticResource RedBrush}"/>
+            <Setter Property="BorderThickness" Value="1.5"/>
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="2">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#1A0606"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{StaticResource RedBrush}"/>
+                                <Setter Property="Foreground" Value="Black"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="PanelLabel" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource MonoFont}"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="14">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="150"/>
+        </Grid.RowDefinitions>
+
+        <!-- 顶部：大号倒计时 -->
+        <Border Grid.Row="0" BorderBrush="{StaticResource GridBrush}" BorderThickness="0,0,0,1" Margin="0,0,0,10" Padding="0,4,0,10">
+            <StackPanel HorizontalAlignment="Center">
+                <TextBlock Style="{StaticResource PanelLabel}" HorizontalAlignment="Center"
+                           Text="BEIJING ROOT SERVER · COUNTDOWN · 550W"/>
+                <TextBlock x:Name="CountdownText" Text="03:00"
+                           FontFamily="{StaticResource MonoFont}" FontSize="68" FontWeight="Bold"
+                           Foreground="{StaticResource RedBrush}" HorizontalAlignment="Center">
+                    <TextBlock.Effect>
+                        <DropShadowEffect x:Name="CountdownGlow" Color="#FF1A1A" BlurRadius="28" ShadowDepth="0" Opacity="0.9"/>
+                    </TextBlock.Effect>
+                </TextBlock>
+            </StackPanel>
+        </Border>
+
+        <!-- 主区：左 / 中 / 右 三栏 -->
+        <Grid Grid.Row="1" Margin="0,0,0,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="280"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="280"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- 左：北京根服务器状态 -->
+            <Border Grid.Column="0" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource GridBrush}" BorderThickness="1" Margin="0,0,10,0" CornerRadius="2">
+                <Grid Margin="12,10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Style="{StaticResource PanelLabel}" Text="// ROOT SERVER 01"/>
+                    <TextBlock Grid.Row="1" FontFamily="{StaticResource MonoFont}" FontSize="14" FontWeight="Bold"
+                               Foreground="{StaticResource TextWhiteBrush}" Text="北京根服务器" Margin="0,4,0,2"/>
+                    <TextBlock Grid.Row="2" Style="{StaticResource PanelLabel}" Foreground="{StaticResource RedDimBrush}"
+                               Text="BEIJING · UNDERWATER NODE" Margin="0,0,0,10"/>
+
+                    <Border Grid.Row="3" BorderBrush="{StaticResource GridBrush}" BorderThickness="0,1,0,1" Margin="0,0,0,10" Padding="0,8">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource PanelLabel}" Text="STATUS" Margin="0,0,0,4"/>
+                            <StackPanel Orientation="Horizontal">
+                                <Ellipse x:Name="StatusDot" Width="10" Height="10" Fill="{StaticResource RedDimBrush}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                <TextBlock x:Name="ServerStatusText" FontFamily="{StaticResource MonoFont}" FontSize="22" FontWeight="Bold"
+                                           Foreground="{StaticResource RedDimBrush}" Text="OFFLINE"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <StackPanel Grid.Row="4">
+                        <TextBlock Style="{StaticResource PanelLabel}" Text="NODE INFO" Margin="0,0,0,6"/>
+                        <TextBlock Style="{StaticResource PanelLabel}" Text="LAT  39.9042° N"/>
+                        <TextBlock Style="{StaticResource PanelLabel}" Text="LON 116.4074° E" Margin="0,2,0,0"/>
+                        <TextBlock Style="{StaticResource PanelLabel}" Text="DEPTH  -842 M" Margin="0,2,0,0"/>
+                        <TextBlock Style="{StaticResource PanelLabel}" Text="UPLINK  550W // Q-BUS" Margin="0,2,0,0"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- 中：密钥显示 + 数字键盘 -->
+            <Grid Grid.Column="1">
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <StackPanel HorizontalAlignment="Center" Margin="0,0,0,14">
+                        <TextBlock Style="{StaticResource PanelLabel}" HorizontalAlignment="Center"
+                                   Text="AUTHORIZATION KEY [ 8 DIGITS ]" Margin="0,0,0,6"/>
+                        <StackPanel x:Name="KeySlotsPanel" Orientation="Horizontal" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                    <Grid x:Name="KeypadGrid" Width="300" Height="240">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Row="0" Grid.Column="0" Style="{StaticResource KeyButton}" Content="1" Tag="1" Click="KeyButton_Click"/>
+                        <Button Grid.Row="0" Grid.Column="1" Style="{StaticResource KeyButton}" Content="2" Tag="2" Click="KeyButton_Click"/>
+                        <Button Grid.Row="0" Grid.Column="2" Style="{StaticResource KeyButton}" Content="3" Tag="3" Click="KeyButton_Click"/>
+                        <Button Grid.Row="1" Grid.Column="0" Style="{StaticResource KeyButton}" Content="4" Tag="4" Click="KeyButton_Click"/>
+                        <Button Grid.Row="1" Grid.Column="1" Style="{StaticResource KeyButton}" Content="5" Tag="5" Click="KeyButton_Click"/>
+                        <Button Grid.Row="1" Grid.Column="2" Style="{StaticResource KeyButton}" Content="6" Tag="6" Click="KeyButton_Click"/>
+                        <Button Grid.Row="2" Grid.Column="0" Style="{StaticResource KeyButton}" Content="7" Tag="7" Click="KeyButton_Click"/>
+                        <Button Grid.Row="2" Grid.Column="1" Style="{StaticResource KeyButton}" Content="8" Tag="8" Click="KeyButton_Click"/>
+                        <Button Grid.Row="2" Grid.Column="2" Style="{StaticResource KeyButton}" Content="9" Tag="9" Click="KeyButton_Click"/>
+                        <Button Grid.Row="3" Grid.Column="0" Style="{StaticResource KeyButton}" Content="CLR" Tag="CLR" Click="KeyButton_Click"
+                                BorderBrush="{StaticResource AmberBrush}" Foreground="{StaticResource AmberBrush}"/>
+                        <Button Grid.Row="3" Grid.Column="1" Style="{StaticResource KeyButton}" Content="0" Tag="0" Click="KeyButton_Click"/>
+                        <Button Grid.Row="3" Grid.Column="2" Style="{StaticResource KeyButton}" Content="ENT" Tag="ENT" Click="KeyButton_Click"
+                                BorderBrush="{StaticResource BlueBrush}" Foreground="{StaticResource BlueBrush}"/>
+                    </Grid>
+                </StackPanel>
+
+                <!-- 认证失败闪烁警告（覆盖中区） -->
+                <Border x:Name="FailText" Visibility="Collapsed" Background="#B0000000" CornerRadius="2">
+                    <TextBlock Text="AUTH FAILED // RETRY"
+                               FontFamily="{StaticResource MonoFont}" FontSize="34" FontWeight="Bold"
+                               Foreground="{StaticResource RedBrightBrush}"
+                               HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <TextBlock.Effect>
+                            <DropShadowEffect Color="#FF1A1A" BlurRadius="20" ShadowDepth="0" Opacity="1"/>
+                        </TextBlock.Effect>
+                    </TextBlock>
+                </Border>
+            </Grid>
+
+            <!-- 右：数字生命卡状态 -->
+            <Border Grid.Column="2" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource GridBrush}" BorderThickness="1" Margin="10,0,0,0" CornerRadius="2">
+                <Grid Margin="12,10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Style="{StaticResource PanelLabel}" Text="// DIGITAL LIFE CARD"/>
+                    <TextBlock Grid.Row="1" FontFamily="{StaticResource MonoFont}" FontSize="14" FontWeight="Bold"
+                               Foreground="{StaticResource TextWhiteBrush}" Text="图恒宇 / 图丫丫" Margin="0,4,0,2"/>
+                    <TextBlock Grid.Row="2" Style="{StaticResource PanelLabel}" Foreground="{StaticResource RedDimBrush}"
+                               Text="TU_HENGYU + TU_YAYA" Margin="0,0,0,10"/>
+
+                    <Border Grid.Row="3" BorderBrush="{StaticResource GridBrush}" BorderThickness="0,1,0,1" Margin="0,0,0,10" Padding="0,8">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource PanelLabel}" Text="CARD STATE" Margin="0,0,0,4"/>
+                            <StackPanel Orientation="Horizontal">
+                                <Ellipse x:Name="CardDot" Width="10" Height="10" Fill="{StaticResource RedBrush}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                <TextBlock x:Name="CardStateText" FontFamily="{StaticResource MonoFont}" FontSize="16" FontWeight="Bold"
+                                           Foreground="{StaticResource RedBrush}" Text="CARD INSERTED"/>
+                            </StackPanel>
+                            <TextBlock Style="{StaticResource PanelLabel}" Text="HOST // 550W MOSS" Margin="0,6,0,0"/>
+                        </StackPanel>
+                    </Border>
+
+                    <StackPanel Grid.Row="4">
+                        <TextBlock Style="{StaticResource PanelLabel}" Text="NEURAL TELEMETRY" Margin="0,0,0,6"/>
+                        <TextBlock Style="{StaticResource PanelLabel}" Text="EEG SYNC ......... ACTIVE"/>
+                        <TextBlock Style="{StaticResource PanelLabel}" Text="MEMORY MAP ....... 98.7%" Margin="0,2,0,0"/>
+                        <TextBlock Style="{StaticResource PanelLabel}" Text="CONSCIOUSNESS ..... STABLE" Margin="0,2,0,0"/>
+                        <TextBlock Style="{StaticResource PanelLabel}" Text="UPLINK ........... 550W" Margin="0,2,0,0"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- 底部：滚动日志 -->
+        <Border Grid.Row="2" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource GridBrush}" BorderThickness="1" CornerRadius="2">
+            <Grid Margin="10,6">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Style="{StaticResource PanelLabel}" Text="// SYSTEM LOG" Margin="0,0,0,4"/>
+                <TextBox Grid.Row="1" x:Name="LogBox"
+                         Background="Transparent"
+                         Foreground="{StaticResource TextBrush}"
+                         BorderThickness="0"
+                         FontFamily="{StaticResource MonoFont}"
+                         FontSize="12"
+                         IsReadOnly="True"
+                         IsReadOnlyCaretVisible="False"
+                         Focusable="False"
+                         VerticalScrollBarVisibility="Auto"
+                         TextWrapping="NoWrap"
+                         CaretBrush="{StaticResource RedBrush}"/>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

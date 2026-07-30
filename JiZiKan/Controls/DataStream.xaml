@@ -1,0 +1,7 @@
+<UserControl x:Class="JiZiKan.Controls.DataStream"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="Transparent">
+    <TextBlock x:Name="Stream" FontFamily="{StaticResource MonoFont}" FontSize="11"
+               Foreground="{StaticResource RedDimBrush}" LineHeight="15" TextWrapping="NoWrap"/>
+</UserControl>

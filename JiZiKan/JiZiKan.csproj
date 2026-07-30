@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AssemblyName>JiZiKan</AssemblyName>
+    <RootNamespace>JiZiKan</RootNamespace>
+    <Version>1.0.0</Version>
+    <Company>UEG</Company>
+    <Product>550W MOSS</Product>
+    <AssemblyTitle>机子看 - 550W 智能量子计算机</AssemblyTitle>
+  </PropertyGroup>
+
+</Project>
