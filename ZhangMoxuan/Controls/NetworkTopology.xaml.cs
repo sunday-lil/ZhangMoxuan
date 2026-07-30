@@ -1,10 +1,10 @@
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 
-namespace JiZiKan.Controls;
+namespace ZhangMoxuan.Controls;
 
 /// <summary>
 /// 全球网络拓扑可视化控件：UEG 主干网络全球分布。

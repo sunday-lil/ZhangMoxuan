@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,7 +9,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Effects;
 using System.Windows.Threading;
 
-namespace JiZiKan.Controls;
+namespace ZhangMoxuan.Controls;
 
 /// <summary>
 /// 图恒宇水下北京根服务器密钥输入场景。

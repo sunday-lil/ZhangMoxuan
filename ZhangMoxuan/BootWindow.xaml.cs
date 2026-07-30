@@ -1,12 +1,12 @@
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
-using JiZiKan.Controls;
+using ZhangMoxuan.Controls;
 
-namespace JiZiKan;
+namespace ZhangMoxuan;
 
 /// <summary>
 /// 550W 多阶段开机自检：固件加载 → 握手协议 → 量子核心激活 → MOSS 之眼觉醒。

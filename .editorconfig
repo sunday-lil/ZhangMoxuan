@@ -1,0 +1,12 @@
+root = true
+
+[*.cs]
+# 关闭"可简化集合初始化"提示（C# 12 集合表达式，风格偏好，非错误）
+dotnet_diagnostic.IDE0028.severity = none
+# 关闭"未使用 using 指令"提示
+dotnet_diagnostic.IDE0005.severity = none
+# 关闭"可标记为 static"提示
+dotnet_diagnostic.IDE0051.severity = none
+
+[*.{xaml,csproj,xml,json,py,md}]
+charset = utf-8

@@ -1,10 +1,10 @@
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
 
-namespace JiZiKan.Controls;
+namespace ZhangMoxuan.Controls;
 
 /// <summary>
 /// 数字生命卡控件：模仿《流浪地球2》中图丫丫 / 图恒宇的数字生命卡

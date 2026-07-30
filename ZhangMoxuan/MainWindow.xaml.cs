@@ -1,12 +1,12 @@
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
-using JiZiKan.Controls;
+using ZhangMoxuan.Controls;
 
-namespace JiZiKan;
+namespace ZhangMoxuan;
 
 /// <summary>
 /// MOSS 主控台。多页面导航：监控 / 网络拓扑 / 数字生命 / 危机预测 / 密钥认证 / MOSS对话。

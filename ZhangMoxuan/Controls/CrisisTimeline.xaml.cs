@@ -1,11 +1,11 @@
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 
-namespace JiZiKan.Controls;
+namespace ZhangMoxuan.Controls;
 
 /// <summary>
 /// MOSS 危机预测时间线：基于《流浪地球2》设定，MOSS 是历次危机的幕后推手。

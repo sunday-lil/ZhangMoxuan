@@ -1,4 +1,4 @@
-# 机子看 / 550W · MOSS
+﻿# 张莫轩 / 550W · MOSS
 
 基于《流浪地球》系列的 **550W 智能量子计算机 / MOSS** 桌面系统复刻。
 
@@ -26,22 +26,22 @@ python start.py
 
 ### 方式二：直接运行 exe
 
-双击 `publish/JiZiKan.exe`（前提：系统已安装 .NET 10 桌面运行时）。
+双击 `publish/ZhangMoxuan.exe`（前提：系统已安装 .NET 10 桌面运行时）。
 
 ### 方式三：开发调试
 
 ```bash
-dotnet run --project JiZiKan/JiZiKan.csproj
+dotnet run --project ZhangMoxuan/ZhangMoxuan.csproj
 ```
 
 ## 发布单文件 exe
 
 ```bash
-dotnet publish JiZiKan/JiZiKan.csproj -c Release -r win-x64 \
+dotnet publish ZhangMoxuan/ZhangMoxuan.csproj -c Release -r win-x64 \
   --self-contained false -p:PublishSingleFile=true -o publish
 ```
 
-生成 `publish/JiZiKan.exe`（framework-dependent 单文件，约 1MB）。
+生成 `publish/ZhangMoxuan.exe`（framework-dependent 单文件，约 1MB）。
 
 ## 功能模块
 
@@ -71,11 +71,11 @@ MOSS 之眼（5 种状态切换）+ 数据流 + 快捷命令
 
 ```
 .
-├── JiZiKan.sln              # 解决方案（传统 .sln 格式）
+├── ZhangMoxuan.sln              # 解决方案（传统 .sln 格式）
 ├── start.py                 # 启动器（运行时检测 + 自动安装兜底）
 ├── publish/                 # 单文件 exe 发布输出
-└── JiZiKan/
-    ├── JiZiKan.csproj
+└── ZhangMoxuan/
+    ├── ZhangMoxuan.csproj
     ├── App.xaml / App.xaml.cs
     ├── BootWindow.xaml(.cs)         # 开机自检 4 阶段
     ├── MainWindow.xaml(.cs)         # 主控台 + 导航

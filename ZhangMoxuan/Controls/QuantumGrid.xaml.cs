@@ -1,10 +1,10 @@
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 
-namespace JiZiKan.Controls;
+namespace ZhangMoxuan.Controls;
 
 /// <summary>
 /// 量子比特可视化：影片中"屏幕上流动的量子位状态可视化"。

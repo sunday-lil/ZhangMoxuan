@@ -1,7 +1,7 @@
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 using System.Windows.Threading;
 
-namespace JiZiKan.Controls;
+namespace ZhangMoxuan.Controls;
 
 /// <summary>
 /// 滚动数据流：影片中屏幕持续滚动的科技感文字。

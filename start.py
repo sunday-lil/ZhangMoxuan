@@ -1,5 +1,5 @@
-"""
-机子看 / 550W MOSS 系统 - 启动器
+﻿"""
+张莫轩 / 550W MOSS 系统 - 启动器
 ================================
 优先使用本机已安装的 .NET 10 桌面运行时启动单文件 exe；
 若未检测到运行时，自动下载微软官方 dotnet-install 脚本静默安装兜底；
@@ -12,7 +12,7 @@ import urllib.request
 import tempfile
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-EXE = os.path.join(ROOT, "publish", "JiZiKan.exe")
+EXE = os.path.join(ROOT, "publish", "ZhangMoxuan.exe")
 DOTNET_INSTALL_URL = "https://dot.net/v1/dotnet-install.ps1"
 DOTNET_DIR = os.path.join(os.environ.get("LOCALAPPDATA", r"%LOCALAPPDATA%\Microsoft\dotnet"), "Microsoft", "dotnet")
 DOTNET_EXE = os.path.join(DOTNET_DIR, "dotnet.exe")
@@ -60,8 +60,8 @@ def install_runtime():
 
 def main():
     if not os.path.exists(EXE):
-        print("[MOSS] 错误：未找到 publish/JiZiKan.exe，请先执行发布。", file=sys.stderr)
-        print("       dotnet publish JiZiKan/JiZiKan.csproj -c Release -r win-x64 "
+        print("[MOSS] 错误：未找到 publish/ZhangMoxuan.exe，请先执行发布。", file=sys.stderr)
+        print("       dotnet publish ZhangMoxuan/ZhangMoxuan.csproj -c Release -r win-x64 "
               "--self-contained false -p:PublishSingleFile=true -o publish", file=sys.stderr)
         sys.exit(1)
 

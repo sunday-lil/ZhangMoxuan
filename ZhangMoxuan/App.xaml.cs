@@ -1,8 +1,8 @@
-using System.IO;
+﻿using System.IO;
 using System.Windows;
 using System.Windows.Threading;
 
-namespace JiZiKan;
+namespace ZhangMoxuan;
 
 /// <summary>
 /// 应用入口。启动时先进入 550W 自检序列（BootWindow），自检完成后进入主控界面（MainWindow）。
