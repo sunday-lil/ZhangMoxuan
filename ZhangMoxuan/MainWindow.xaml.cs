@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -168,10 +168,8 @@ public partial class MainWindow : Window
         // 右上：行星发动机网络
         grid.Children.Add(MakePanel("ENGINE NETWORK // 10000 UNITS", 1, 0, BuildEngineNetwork()));
         // 下方：量子核心
-        var qPanel = MakePanel("QUANTUM CORE // 8192 QUBITS", 0, 1, null, 2);
         var qg = new QuantumGrid();
-        (qPanel.Child as Grid)?.Children.Add(qg);
-        grid.Children.Add(qPanel);
+        grid.Children.Add(MakePanel("QUANTUM CORE // 8192 QUBITS", 0, 1, qg, 2));
 
         return grid;
     }
