@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -26,25 +26,20 @@ public partial class MossEye : UserControl
     }
 
     private Storyboard? _stateStoryboard;
-    private readonly DispatcherTimer _arcTimer;
 
     public MossEye()
     {
         InitializeComponent();
         Loaded += MossEye_Loaded;
         SizeChanged += (_, _) => Rebuild();
-        _arcTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(16) };
-        _arcTimer.Tick += (_, _) =>
-        {
-            var angle = ((ArcRotate.Angle + 3) % 360);
-            ArcRotate.Angle = angle;
-        };
     }
 
     private void MossEye_Loaded(object sender, RoutedEventArgs e)
     {
         Rebuild();
-        _arcTimer.Start();
+        // 扫描弧旋转：DoubleAnimation 跑在合成线程，避免 60fps DispatcherTimer 占用 UI 线程
+        var rotate = new DoubleAnimation(0, 360, TimeSpan.FromSeconds(4)) { RepeatBehavior = RepeatBehavior.Forever };
+        ArcRotate.BeginAnimation(RotateTransform.AngleProperty, rotate);
         ApplyState(State);
     }
 

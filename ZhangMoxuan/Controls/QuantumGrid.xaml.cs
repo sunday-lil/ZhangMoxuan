@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -22,7 +22,10 @@ public partial class QuantumGrid : UserControl
 
     private readonly List<Qubit> _qubits = new();
     private readonly List<Line> _links = new();
-    private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromMilliseconds(80) };
+    private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromMilliseconds(120) };
+    private Brush _redDim = null!;
+    private Brush _red = null!;
+    private Brush _redBright = null!;
     private int _cols = 32;
     private int _rows = 16;
 
@@ -53,8 +56,9 @@ public partial class QuantumGrid : UserControl
         var startX = (w - cell * _cols) / 2 + cell / 2;
         var startY = (h - cell * _rows) / 2 + cell / 2;
 
-        var redDim = (Brush)FindResource("RedDimBrush");
-        var red = (Brush)FindResource("RedBrush");
+        _redDim = (Brush)FindResource("RedDimBrush");
+        _red = (Brush)FindResource("RedBrush");
+        _redBright = (Brush)FindResource("RedBrightBrush");
 
         // 量子比特点阵
         for (int y = 0; y < _rows; y++)
@@ -63,7 +67,7 @@ public partial class QuantumGrid : UserControl
             var dot = new Ellipse
             {
                 Width = 3, Height = 3,
-                Fill = redDim,
+                Fill = _redDim,
                 Opacity = 0.4
             };
             Canvas.SetLeft(dot, startX + x * cell - 1.5);
@@ -85,7 +89,7 @@ public partial class QuantumGrid : UserControl
                 Y1 = startY + a.Y * cell,
                 X2 = startX + b.X * cell,
                 Y2 = startY + b.Y * cell,
-                Stroke = red,
+                Stroke = _red,
                 StrokeThickness = 0.5,
                 Opacity = 0
             };
@@ -100,26 +104,23 @@ public partial class QuantumGrid : UserControl
     {
         // 流动：随机一些比特改变状态，形成"波"
         var rng = Random.Shared;
-        var redDim = (Brush)FindResource("RedDimBrush");
-        var red = (Brush)FindResource("RedBrush");
-        var redBright = (Brush)FindResource("RedBrightBrush");
 
-        for (int i = 0; i < 60; i++)
+        for (int i = 0; i < 30; i++)
         {
             var q = _qubits[rng.Next(_qubits.Count)];
             q.State = (q.State + 1) % 3;
             switch (q.State)
             {
                 case 0:
-                    q.Dot.Fill = redDim;
+                    q.Dot.Fill = _redDim;
                     q.Dot.Opacity = 0.3 + rng.NextDouble() * 0.2;
                     break;
                 case 1:
-                    q.Dot.Fill = red;
+                    q.Dot.Fill = _red;
                     q.Dot.Opacity = 0.5 + rng.NextDouble() * 0.3;
                     break;
                 case 2:
-                    q.Dot.Fill = redBright;
+                    q.Dot.Fill = _redBright;
                     q.Dot.Opacity = 0.8 + rng.NextDouble() * 0.2;
                     break;
             }

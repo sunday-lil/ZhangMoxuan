@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -30,7 +30,7 @@ public partial class NetworkTopology : UserControl
     private readonly List<Line> _linkLines = new();
     private readonly List<Ellipse> _nodeDots = new();
     private readonly List<Ellipse> _rootRings = new();
-    private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromMilliseconds(40) };
+    private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromMilliseconds(50) };
     private readonly DispatcherTimer _statTimer = new() { Interval = TimeSpan.FromSeconds(1) };
     private readonly Random _rng = new(1337);
     private int _tick;
