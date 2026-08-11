@@ -18,17 +18,9 @@ Windows 原生 WPF 应用，**纯 C# + DirectX 渲染，无浏览器内核**，�
 
 ### 方式一：下载 Release 单文件（推荐，零依赖）
 
-从 [Release v1.0](https://github.com/sunday-lil/ZhangMoxuan/releases/tag/v1.0) 下载 `ZhangMoxuan.exe`（约 133 MB），**self-contained 单文件，内置 .NET 运行时，无需任何安装，双击即跑**。
+从 [Release v1.1](https://github.com/sunday-lil/ZhangMoxuan/releases/tag/v1.1) 下载 `ZhangMoxuan.exe`（约 133 MB），**self-contained 单文件，内置 .NET 运行时，无需任何安装，双击即跑**。
 
-### 方式二：一键启动（需源码）
-
-```bash
-python start.py
-```
-
-`start.py` 会：检测 `publish/ZhangMoxuan.exe` 是否存在 → 不存在则自动 `dotnet publish` 生成 → 启动；发布失败则引导从 Release 下载。
-
-### 方式三：开发调试
+### 方式二：开发调试（需源码）
 
 ```bash
 dotnet run --project ZhangMoxuan/ZhangMoxuan.csproj
@@ -73,7 +65,6 @@ MOSS 之眼（5 种状态切换）+ 数据流 + 快捷命令
 ```
 .
 ├── ZhangMoxuan.sln              # 解决方案（传统 .sln 格式）
-├── start.py                     # 启动器（exe 不存在则自动发布）
 ├── README.md
 ├── .editorconfig                # 关闭代码风格 Info 提示
 ├── cspell.json                  # 拼写词典
