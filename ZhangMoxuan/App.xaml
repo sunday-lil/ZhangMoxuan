@@ -40,6 +40,7 @@
             <SolidColorBrush x:Key="BlueBrush" Color="{StaticResource HumanBlue}"/>
             <SolidColorBrush x:Key="AmberBrush" Color="{StaticResource WarnAmber}"/>
             <SolidColorBrush x:Key="TextBrush" Color="{StaticResource TextSecondary}"/>
+            <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource TextSecondary}"/>
             <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource TextPrimary}"/>
             <SolidColorBrush x:Key="TextTertiaryBrush" Color="{StaticResource TextTertiary}"/>
             <!-- 兼容旧引用 -->
