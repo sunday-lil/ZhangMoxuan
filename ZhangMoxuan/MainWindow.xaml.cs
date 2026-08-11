@@ -107,48 +107,48 @@ public partial class MainWindow : Window
             child.Tag = null;
 
         PageHost.Children.Clear();
-        BottomStatus.Text = "MOSS // 延续人类文明的最优选择";
+        BottomStatus.Text = "MOSS · 延续人类文明的最优选择";
 
         switch (page)
         {
             case "dashboard":
                 NavDashboard.Tag = "Active";
-                PageTitle.Text = "MONITOR // GLOBAL STATUS";
-                PageSub.Text = "   行星发动机网络 / 地球状态 / 量子核心";
+                PageTitle.Text = "Monitor";
+                PageSub.Text = "  ·  行星发动机网络 · 地球状态 · 量子核心";
                 PageHost.Children.Add(BuildDashboard());
                 break;
             case "network":
                 NavNetwork.Tag = "Active";
-                PageTitle.Text = "NETWORK // UEG BACKBONE";
-                PageSub.Text = "   全球网络拓扑 / 握手协议 / 根服务器同步";
+                PageTitle.Text = "Network";
+                PageSub.Text = "  ·  全球网络拓扑 · 握手协议 · 根服务器同步";
                 PageHost.Children.Add(BuildNetwork());
                 break;
             case "digital":
                 NavDigital.Tag = "Active";
-                PageTitle.Text = "DIGITAL LIFE // 550W";
-                PageSub.Text = "   意识上传 / 数字生命承载 / 迭代模拟";
+                PageTitle.Text = "Digital Life";
+                PageSub.Text = "  ·  意识上传 · 数字生命承载 · 迭代模拟";
                 PageHost.Children.Add(BuildDigitalLife());
                 break;
             case "crisis":
                 NavCrisis.Tag = "Active";
-                PageTitle.Text = "CRISIS FORECAST // MOSS";
-                PageSub.Text = "   未来危机推演 / 决策方案 / 置信度评估";
+                PageTitle.Text = "Crisis Forecast";
+                PageSub.Text = "  ·  未来危机推演 · 决策方案 · 置信度评估";
                 PageHost.Children.Add(new CrisisTimeline { Margin = new Thickness(8) });
                 SideEye.State = MossEye.EyeState.Alert;
                 break;
             case "key":
                 NavKey.Tag = "Active";
-                PageTitle.Text = "KEY AUTH // ROOT SERVER 01";
-                PageSub.Text = "   北京根服务器 / 图恒宇 / 密钥认证";
+                PageTitle.Text = "Key Auth";
+                PageSub.Text = "  ·  北京根服务器 · 图恒宇 · 密钥认证";
                 _keyScene = new KeyInputScene { Margin = new Thickness(8) };
                 _keyScene.Start();
                 PageHost.Children.Add(_keyScene);
-                BottomStatus.Text = "MOSS // 倒计时进行中。输入密钥 31415926 启动根服务器。";
+                BottomStatus.Text = "MOSS · 倒计时进行中。输入密钥 31415926 启动根服务器。";
                 break;
             case "dialog":
                 NavDialog.Tag = "Active";
-                PageTitle.Text = "MOSS DIALOG // 550W";
-                PageSub.Text = "   理性决策 / 概率推演 / 文明延续";
+                PageTitle.Text = "Moss Dialog";
+                PageSub.Text = "  ·  理性决策 · 概率推演 · 文明延续";
                 PageHost.Children.Add(BuildDialog());
                 break;
         }
@@ -164,12 +164,12 @@ public partial class MainWindow : Window
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
 
         // 左上：地球状态
-        grid.Children.Add(MakePanel("EARTH STATUS // 地球状态", 0, 0, BuildEarthStatus()));
+        grid.Children.Add(MakePanel("Earth Status · 地球状态", 0, 0, BuildEarthStatus()));
         // 右上：行星发动机网络
-        grid.Children.Add(MakePanel("ENGINE NETWORK // 10000 UNITS", 1, 0, BuildEngineNetwork()));
+        grid.Children.Add(MakePanel("Engine Network · 10000 Units", 1, 0, BuildEngineNetwork()));
         // 下方：量子核心
         var qg = new QuantumGrid();
-        grid.Children.Add(MakePanel("QUANTUM CORE // 8192 QUBITS", 0, 1, qg, 2));
+        grid.Children.Add(MakePanel("Quantum Core · 8192 Qubits", 0, 1, qg, 2));
 
         return grid;
     }
@@ -190,11 +190,12 @@ public partial class MainWindow : Window
         };
         foreach (var (n, v, sub) in items)
         {
-            var row = new Grid { Margin = new Thickness(0, 3, 0, 3) };
+            var row = new Grid { Margin = new Thickness(0, 4, 0, 4) };
             row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
             row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-            var name = new TextBlock { Text = n, FontFamily = Mono(), FontSize = 10, Foreground = Gray() };
-            var val = new TextBlock { Text = v, FontFamily = Mono(), FontSize = 10, Foreground = v.Contains("APPROACHING") ? Amber() : Red() };
+            var name = new TextBlock { Text = n, FontFamily = Sans(), FontSize = 10, Foreground = Gray() };
+            Typography.SetCapitals(name, FontCapitals.AllSmallCaps);
+            var val = new TextBlock { Text = v, FontFamily = Mono(), FontSize = 11, Foreground = v.Contains("APPROACHING") ? Amber() : White() };
             Grid.SetColumn(val, 1);
             row.Children.Add(name); row.Children.Add(val);
             sp.Children.Add(row);
@@ -219,9 +220,11 @@ public partial class MainWindow : Window
         statGrid.ColumnDefinitions.Add(new ColumnDefinition());
         for (int i = 0; i < stats.Length; i++)
         {
-            var item = new StackPanel { Margin = new Thickness(0, 0, 8, 8) };
-            item.Children.Add(new TextBlock { Text = stats[i].Item1, FontFamily = Mono(), FontSize = 9, Foreground = Gray() });
-            item.Children.Add(new TextBlock { Text = stats[i].Item2, FontFamily = Mono(), FontSize = 16, Foreground = Red() });
+            var item = new StackPanel { Margin = new Thickness(0, 0, 12, 12) };
+            var lbl = new TextBlock { Text = stats[i].Item1, FontFamily = Sans(), FontSize = 9, Foreground = Tertiary() };
+            Typography.SetCapitals(lbl, FontCapitals.AllSmallCaps);
+            item.Children.Add(lbl);
+            item.Children.Add(new TextBlock { Text = stats[i].Item2, FontFamily = Mono(), FontSize = 18, FontWeight = FontWeights.SemiBold, Foreground = White(), Margin = new Thickness(0, 2, 0, 0) });
             Grid.SetColumn(item, i % 2); Grid.SetRow(item, i / 2);
             statGrid.RowDefinitions.Add(new RowDefinition());
             statGrid.Children.Add(item);
@@ -229,18 +232,20 @@ public partial class MainWindow : Window
         sp.Children.Add(statGrid);
 
         // 区域列表
-        sp.Children.Add(new TextBlock { Text = "REGIONAL STATUS", FontFamily = Mono(), FontSize = 9, Foreground = Gray(), Margin = new Thickness(0, 8, 0, 4) });
+        var regLabel = new TextBlock { Text = "REGIONAL STATUS", FontFamily = Sans(), FontSize = 9, FontWeight = FontWeights.SemiBold, Foreground = Tertiary(), Margin = new Thickness(0, 8, 0, 6) };
+        Typography.SetCapitals(regLabel, FontCapitals.AllSmallCaps);
+        sp.Children.Add(regLabel);
         var regions = new[] { ("ASIA", "4,200", "OK"), ("EUROPE", "1,800", "OK"), ("AFRICA", "1,500", "OK"), ("AMERICAS", "2,000", "OK"), ("OCEANIA", "500", "WARN") };
         foreach (var (r, c, s) in regions)
         {
-            var row = new Grid { Margin = new Thickness(0, 2, 0, 2) };
+            var row = new Grid { Margin = new Thickness(0, 3, 0, 3) };
             row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
             row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
             row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-            row.Children.Add(new TextBlock { Text = r, FontFamily = Mono(), FontSize = 10, Foreground = White() });
-            var cnt = new TextBlock { Text = c, FontFamily = Mono(), FontSize = 10, Foreground = Gray(), HorizontalAlignment = HorizontalAlignment.Center };
+            row.Children.Add(new TextBlock { Text = r, FontFamily = Sans(), FontSize = 11, Foreground = White() });
+            var cnt = new TextBlock { Text = c, FontFamily = Mono(), FontSize = 11, Foreground = Gray(), HorizontalAlignment = HorizontalAlignment.Center };
             Grid.SetColumn(cnt, 1); row.Children.Add(cnt);
-            var st = new TextBlock { Text = s, FontFamily = Mono(), FontSize = 10, Foreground = s == "OK" ? Red() : Amber() };
+            var st = new TextBlock { Text = s, FontFamily = Mono(), FontSize = 10, Foreground = s == "OK" ? Gray() : Amber() };
             Grid.SetColumn(st, 2); row.Children.Add(st);
             sp.Children.Add(row);
         }
@@ -255,13 +260,13 @@ public partial class MainWindow : Window
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(420) });
 
         var topo = new NetworkTopology();
-        grid.Children.Add(MakePanel("UEG BACKBONE // GLOBAL TOPOLOGY", 0, 0, topo));
+        grid.Children.Add(MakePanel("UEG Backbone · Global Topology", 0, 0, topo));
 
         var handshake = new HandshakeProtocol();
-        var hp = MakePanel("PROTOCOL HANDSHAKE", 1, 0, handshake);
+        var hp = MakePanel("Protocol Handshake", 1, 0, handshake);
         // 自动重跑握手按钮
-        var btn = new Button { Content = "▸ RE-RUN HANDSHAKE", Style = (Style)FindResource("NavBtn"), Padding = new Thickness(0, 8, 0, 8), Margin = new Thickness(0, 8, 0, 0) };
-        btn.Click += async (_, _) => { btn.Content = "▸ HANDSHAKING..."; await handshake.RunAsync(); btn.Content = "▸ HANDSHAKE COMPLETE"; };
+        var btn = new Button { Content = "Re-run Handshake", Style = (Style)FindResource("NavBtn"), Padding = new Thickness(0, 8, 0, 8), Margin = new Thickness(0, 8, 0, 0) };
+        btn.Click += async (_, _) => { btn.Content = "Handshaking..."; await handshake.RunAsync(); btn.Content = "Handshake Complete"; };
         (hp.Child as Grid)?.Children.Add(btn);
         grid.Children.Add(hp);
         return grid;
@@ -273,8 +278,8 @@ public partial class MainWindow : Window
         var sp = new StackPanel { Margin = new Thickness(16) };
         sp.Children.Add(new TextBlock
         {
-            Text = "// 数字生命计划。意识上传至 550W 量子核心，寿命由 550A 的 2 分钟延长至 70 年。",
-            FontFamily = Mono(), FontSize = 11, Foreground = Gray(), Margin = new Thickness(0, 0, 0, 16)
+            Text = "数字生命计划 · 意识上传至 550W 量子核心，寿命由 550A 的 2 分钟延长至 70 年。",
+            FontFamily = Sans(), FontSize = 12, Foreground = Gray(), Margin = new Thickness(0, 0, 0, 16)
         });
 
         var card1 = new DigitalLifeCard { SubjectName = "图丫丫", SubjectId = "DLID-550W-0001", Margin = new Thickness(0, 0, 0, 12) };
@@ -288,7 +293,7 @@ public partial class MainWindow : Window
         // 迭代日志
         var log = new Border { Background = Panel(), BorderBrush = GridLine(), BorderThickness = new Thickness(1), Margin = new Thickness(0, 16, 0, 0), Padding = new Thickness(14) };
         var lsp = new StackPanel();
-        lsp.Children.Add(new TextBlock { Text = "ITERATION LOG", Style = (Style)FindResource("HudLabel"), Margin = new Thickness(0, 0, 0, 8) });
+        lsp.Children.Add(new TextBlock { Text = "ITERATION LOG", Style = (Style)FindResource("HudLabel"), Margin = new Thickness(0, 0, 0, 10) });
         var logs = new[]
         {
             "[2075-01-01 02:14:33] DLID-550W-0001 迭代 #2,048,512 意识稳定度 99.7%",
@@ -298,7 +303,7 @@ public partial class MainWindow : Window
             "[2075-01-01 02:15:18] MOSS: 数字生命是变量。文明延续是常量。"
         };
         foreach (var l in logs)
-            lsp.Children.Add(new TextBlock { Text = l, FontFamily = Mono(), FontSize = 10, Foreground = l.Contains("MOSS") ? Red() : Gray(), Margin = new Thickness(0, 2, 0, 0) });
+            lsp.Children.Add(new TextBlock { Text = l, FontFamily = Mono(), FontSize = 10, Foreground = l.Contains("MOSS") ? Red() : Tertiary(), Margin = new Thickness(0, 3, 0, 0) });
         log.Child = lsp;
         sp.Children.Add(log);
         return sp;
@@ -316,7 +321,7 @@ public partial class MainWindow : Window
         var preset = new WrapPanel { Margin = new Thickness(0, 0, 0, 12) };
         foreach (var (q, _) in PresetQA)
         {
-            var b = new Button { Content = "▸ " + q, Style = (Style)FindResource("NavBtn"), Padding = new Thickness(8, 6, 8, 6), Margin = new Thickness(0, 0, 8, 0) };
+            var b = new Button { Content = q, Style = (Style)FindResource("NavBtn"), Padding = new Thickness(8, 6, 8, 6), Margin = new Thickness(0, 0, 8, 0) };
             var qText = q;
             b.Click += (_, _) => Ask(qText);
             preset.Children.Add(b);
@@ -339,15 +344,15 @@ public partial class MainWindow : Window
         inputRow.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
         _dialogInput = new TextBox
         {
-            Background = Panel(), BorderBrush = Red(), BorderThickness = new Thickness(1),
-            Foreground = White(), FontFamily = Mono(), FontSize = 12, Padding = new Thickness(10, 8, 10, 8),
+            Background = Elevated(), BorderBrush = GridLine(), BorderThickness = new Thickness(1),
+            Foreground = White(), FontFamily = Sans(), FontSize = 12, Padding = new Thickness(10, 8, 10, 8),
             CaretBrush = Red()
         };
         _dialogInput.KeyDown += (s, e) => { if (e.Key == Key.Enter) Ask(_dialogInput.Text); };
         Grid.SetColumn(_dialogInput, 0);
         inputRow.Children.Add(_dialogInput);
 
-        var send = new Button { Content = "SEND ▸", Style = (Style)FindResource("NavBtn"), Padding = new Thickness(16, 8, 16, 8), Margin = new Thickness(8, 0, 0, 0) };
+        var send = new Button { Content = "Send", Style = (Style)FindResource("NavBtn"), Padding = new Thickness(16, 8, 16, 8), Margin = new Thickness(8, 0, 0, 0) };
         send.Click += (_, _) => Ask(_dialogInput.Text);
         Grid.SetColumn(send, 1);
         inputRow.Children.Add(send);
@@ -396,8 +401,8 @@ public partial class MainWindow : Window
     private void AppendUser(string text)
     {
         if (_dialogHistory == null) return;
-        var b = new Border { Background = new SolidColorBrush(Color.FromRgb(0x1A, 0x1F, 0x26)), BorderBrush = GridLine(), BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(4), Padding = new Thickness(12, 8, 12, 8), Margin = new Thickness(0, 6, 80, 6), HorizontalAlignment = HorizontalAlignment.Right };
-        b.Child = new TextBlock { Text = text, FontFamily = Mono(), FontSize = 11, Foreground = White(), TextWrapping = TextWrapping.Wrap };
+        var b = new Border { Background = Elevated(), BorderBrush = GridLine(), BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(4), Padding = new Thickness(12, 8, 12, 8), Margin = new Thickness(0, 6, 80, 6), HorizontalAlignment = HorizontalAlignment.Right };
+        b.Child = new TextBlock { Text = text, FontFamily = Sans(), FontSize = 12, Foreground = White(), TextWrapping = TextWrapping.Wrap };
         _dialogHistory.Children.Add(b);
     }
 
@@ -406,14 +411,13 @@ public partial class MainWindow : Window
         var sp = new StackPanel();
         if (withHeader)
         {
-            var header = new TextBlock { Text = "MOSS", FontFamily = Mono(), FontSize = 10, FontWeight = FontWeights.Bold, Foreground = Red(), Margin = new Thickness(0, 0, 0, 4) };
-            header.Effect = new System.Windows.Media.Effects.DropShadowEffect { Color = Color.FromRgb(0xFF, 0x1A, 0x1A), BlurRadius = 8, ShadowDepth = 0, Opacity = 0.7 };
+            var header = new TextBlock { Text = "MOSS", FontFamily = Sans(), FontSize = 10, FontWeight = FontWeights.SemiBold, Foreground = Red(), Margin = new Thickness(0, 0, 0, 4) };
             sp.Children.Add(header);
         }
         if (!string.IsNullOrEmpty(text))
-            sp.Children.Add(new TextBlock { Text = text, FontFamily = Mono(), FontSize = 11, Foreground = White(), TextWrapping = TextWrapping.Wrap });
+            sp.Children.Add(new TextBlock { Text = text, FontFamily = Sans(), FontSize = 12, Foreground = White(), TextWrapping = TextWrapping.Wrap });
 
-        var b = new Border { Background = new SolidColorBrush(Color.FromRgb(0x0A, 0x0C, 0x10)), BorderBrush = Red(), BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(4), Padding = new Thickness(12, 8, 12, 8), Margin = new Thickness(80, 6, 0, 6), HorizontalAlignment = HorizontalAlignment.Left };
+        var b = new Border { Background = Panel(), BorderBrush = GridLine(), BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(4), Padding = new Thickness(12, 8, 12, 8), Margin = new Thickness(80, 6, 0, 6), HorizontalAlignment = HorizontalAlignment.Left };
         b.Child = sp;
         _dialogHistory?.Children.Add(b);
         return sp;
@@ -422,9 +426,9 @@ public partial class MainWindow : Window
     private void AppendToBubble(StackPanel bubble, string label, string text)
     {
         var row = new StackPanel { Margin = new Thickness(0, 3, 0, 0) };
-        var lbl = new TextBlock { Text = $"[{label}]", FontFamily = Mono(), FontSize = 10, Foreground = Red(), FontWeight = FontWeights.Bold };
+        var lbl = new TextBlock { Text = label.ToUpper(), FontFamily = Sans(), FontSize = 9, Foreground = Tertiary(), FontWeight = FontWeights.SemiBold };
         row.Children.Add(lbl);
-        row.Children.Add(new TextBlock { Text = text, FontFamily = Mono(), FontSize = 11, Foreground = White(), TextWrapping = TextWrapping.Wrap, Margin = new Thickness(12, 2, 0, 0) });
+        row.Children.Add(new TextBlock { Text = text, FontFamily = Sans(), FontSize = 12, Foreground = White(), TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 0) });
         bubble.Children.Add(row);
     }
 
@@ -435,12 +439,13 @@ public partial class MainWindow : Window
         var g = new Grid();
         g.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
         g.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
-        var t = new TextBlock { Text = title, FontFamily = Mono(), FontSize = 10, Foreground = Red(), Margin = new Thickness(14, 10, 14, 8) };
+        var t = new TextBlock { Text = title, FontFamily = Sans(), FontSize = 10, FontWeight = FontWeights.SemiBold, Foreground = Tertiary(), Margin = new Thickness(14, 12, 14, 10) };
+        Typography.SetCapitals(t, FontCapitals.AllSmallCaps);
         g.Children.Add(t);
         if (content is FrameworkElement fe)
         {
             Grid.SetRow(fe, 1);
-            fe.Margin = new Thickness(14, 0, 14, 12);
+            fe.Margin = new Thickness(14, 0, 14, 14);
             g.Children.Add(fe);
         }
         b.Child = g;
@@ -453,11 +458,15 @@ public partial class MainWindow : Window
     private void CmdReboot_Click(object sender, RoutedEventArgs e) => Application.Current.Shutdown();
     private void CmdKey_Click(object sender, RoutedEventArgs e) => Navigate("key");
 
-    private static FontFamily Mono() => new("Consolas");
-    private static Brush Red() => new SolidColorBrush(Color.FromRgb(0xFF, 0x1A, 0x1A));
-    private static Brush Gray() => new SolidColorBrush(Color.FromRgb(0x9A, 0xA0, 0xA6));
-    private static Brush White() => new SolidColorBrush(Color.FromRgb(0xE6, 0xE8, 0xEB));
-    private static Brush Amber() => new SolidColorBrush(Color.FromRgb(0xFF, 0xB3, 0x00));
-    private static Brush Panel() => new SolidColorBrush(Color.FromRgb(0x0A, 0x0C, 0x10));
-    private static Brush GridLine() => new SolidColorBrush(Color.FromRgb(0x1A, 0x1F, 0x26));
+    private static FontFamily Mono() => new("Cascadia Mono, Consolas");
+    private static FontFamily Sans() => new("Segoe UI Variable Text, Segoe UI, Microsoft YaHei UI");
+    private static Brush Red() => new SolidColorBrush(Color.FromRgb(0xD8, 0x43, 0x4C));
+    private static Brush RedBright() => new SolidColorBrush(Color.FromRgb(0xF2, 0x55, 0x5E));
+    private static Brush Gray() => new SolidColorBrush(Color.FromRgb(0x8A, 0x92, 0x9E));
+    private static Brush Tertiary() => new SolidColorBrush(Color.FromRgb(0x5A, 0x63, 0x70));
+    private static Brush White() => new SolidColorBrush(Color.FromRgb(0xDD, 0xE2, 0xEA));
+    private static Brush Amber() => new SolidColorBrush(Color.FromRgb(0xE8, 0xA5, 0x3A));
+    private static Brush Panel() => new SolidColorBrush(Color.FromRgb(0x11, 0x16, 0x1F));
+    private static Brush Elevated() => new SolidColorBrush(Color.FromRgb(0x16, 0x1C, 0x27));
+    private static Brush GridLine() => new SolidColorBrush(Color.FromRgb(0x1E, 0x25, 0x30));
 }

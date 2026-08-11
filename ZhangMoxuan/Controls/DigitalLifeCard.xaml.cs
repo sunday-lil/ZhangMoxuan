@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -100,20 +100,20 @@ public partial class DigitalLifeCard : UserControl
         Color core, mid, outer, glow, ring2;
         if (isYaya)
         {
-            core = Color.FromRgb(0xFF, 0x38, 0x38);
-            mid = Color.FromRgb(0xFF, 0x1A, 0x1A);
-            outer = Color.FromRgb(0x0A, 0x00, 0x00);
-            glow = Color.FromRgb(0xFF, 0x1A, 0x1A);
-            ring2 = Color.FromRgb(0xFF, 0x1A, 0x1A);
+            core = Color.FromRgb(0xF2, 0x55, 0x5E);
+            mid = Color.FromRgb(0xD8, 0x43, 0x4C);
+            outer = Color.FromRgb(0x0A, 0x05, 0x07);
+            glow = Color.FromRgb(0xD8, 0x43, 0x4C);
+            ring2 = Color.FromRgb(0xD8, 0x43, 0x4C);
         }
         else
         {
             // 图恒宇：人类蓝
             core = Color.FromRgb(0x6E, 0xAA, 0xFF);
-            mid = Color.FromRgb(0x1E, 0x6F, 0xFF);
+            mid = Color.FromRgb(0x3A, 0x7B, 0xFF);
             outer = Color.FromRgb(0x00, 0x08, 0x14);
-            glow = Color.FromRgb(0x1E, 0x6F, 0xFF);
-            ring2 = Color.FromRgb(0x1E, 0x6F, 0xFF);
+            glow = Color.FromRgb(0x3A, 0x7B, 0xFF);
+            ring2 = Color.FromRgb(0x3A, 0x7B, 0xFF);
         }
 
         AvatarStop0.Color = core;

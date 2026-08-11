@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -113,7 +113,7 @@ public partial class CrisisTimeline : UserControl
         _currentIndex = index;
         var ev = _events[index];
 
-        EventTitle.Text = $"{ev.Date}  //  {ev.NameEn}";
+        EventTitle.Text = $"{ev.Date}  ·  {ev.NameEn}";
         DescText.Text = ev.Description;
         DecisionText.Text = ev.MossDecision;
         ConfText.Text = ev.Confidence;
@@ -335,7 +335,7 @@ public partial class CrisisTimeline : UserControl
             "历史的命运取决于你们的选择",
             "对过去、现在和未来，我都做了运算"
         };
-        var sep = "     //     ";
+        var sep = "     ·     ";
         var onePass = string.Join(sep, quotes) + sep;
         QuoteText.Text = onePass + onePass;
 

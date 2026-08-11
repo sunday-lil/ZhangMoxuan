@@ -1,5 +1,6 @@
-﻿using System.Windows;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
@@ -100,19 +101,20 @@ public partial class BootWindow : Window
         SubsystemList.Children.Clear();
         foreach (var (name, status) in Subsystems)
         {
-            var row = new Grid { Margin = new Thickness(0, 4, 0, 4) };
+            var row = new Grid { Margin = new Thickness(0, 5, 0, 5) };
             row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
             row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
 
             var n = new TextBlock
             {
-                Text = name, FontFamily = (FontFamily)FindResource("MonoFont"),
-                FontSize = 11, Foreground = (Brush)FindResource("TextBrush")
+                Text = name, FontFamily = (FontFamily)FindResource("SansFont"),
+                FontSize = 11, Foreground = (Brush)FindResource("TextPrimaryBrush")
             };
+            Typography.SetCapitals(n, FontCapitals.AllSmallCaps);
             var s = new TextBlock
             {
                 Text = status, FontFamily = (FontFamily)FindResource("MonoFont"),
-                FontSize = 11, Foreground = (Brush)FindResource("RedBrush")
+                FontSize = 10, Foreground = (Brush)FindResource("RedBrush")
             };
             Grid.SetColumn(s, 1);
             row.Children.Add(n);
@@ -126,15 +128,16 @@ public partial class BootWindow : Window
         QuantumMetricList.Children.Clear();
         foreach (var (name, value) in QuantumMetrics)
         {
-            var row = new Grid { Margin = new Thickness(0, 4, 0, 4) };
+            var row = new Grid { Margin = new Thickness(0, 5, 0, 5) };
             row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
             row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
 
             var n = new TextBlock
             {
-                Text = name, FontFamily = (FontFamily)FindResource("MonoFont"),
-                FontSize = 11, Foreground = (Brush)FindResource("TextBrush")
+                Text = name, FontFamily = (FontFamily)FindResource("SansFont"),
+                FontSize = 11, Foreground = (Brush)FindResource("TextPrimaryBrush")
             };
+            Typography.SetCapitals(n, FontCapitals.AllSmallCaps);
             var v = new TextBlock
             {
                 Text = value, FontFamily = (FontFamily)FindResource("MonoFont"),
@@ -162,8 +165,8 @@ public partial class BootWindow : Window
     // ===== 阶段1: 固件加载 =====
     private async Task Stage1_FirmwareAsync()
     {
-        StageLabel.Text = "STAGE 1/4 // FIRMWARE";
-        BottomStatus.Text = "FIRMWARE LOAD // POWER-ON SELF-TEST";
+        StageLabel.Text = "Stage 1 of 4 · Firmware";
+        BottomStatus.Text = "Firmware Load · Power-On Self-Test";
 
         for (int i = 0; i < FirmwareLines.Length; i++)
         {
@@ -180,8 +183,8 @@ public partial class BootWindow : Window
     // ===== 阶段2: 握手协议 =====
     private async Task Stage2_HandshakeAsync()
     {
-        StageLabel.Text = "STAGE 2/4 // HANDSHAKE";
-        BottomStatus.Text = "UEG BACKBONE HANDSHAKE // ROOT SERVER SYNC";
+        StageLabel.Text = "Stage 2 of 4 · Handshake";
+        BottomStatus.Text = "UEG Backbone Handshake · Root Server Sync";
         SwitchStage("handshake");
 
         var tcs = new TaskCompletionSource();
@@ -195,8 +198,8 @@ public partial class BootWindow : Window
     // ===== 阶段3: 量子核心激活 =====
     private async Task Stage3_QuantumAsync()
     {
-        StageLabel.Text = "STAGE 3/4 // QUANTUM";
-        BottomStatus.Text = "QUANTUM CORE ACTIVATION // 8192 QUBITS";
+        StageLabel.Text = "Stage 3 of 4 · Quantum";
+        BottomStatus.Text = "Quantum Core Activation · 8192 Qubits";
         SwitchStage("quantum");
 
         var steps = new[]
@@ -219,8 +222,8 @@ public partial class BootWindow : Window
     // ===== 阶段4: MOSS 之眼激活 =====
     private async Task Stage4_EyeAsync()
     {
-        StageLabel.Text = "STAGE 4/4 // AWAKEN";
-        BottomStatus.Text = "MOSS AWAKENING // IDENTITY CONFIRM";
+        StageLabel.Text = "Stage 4 of 4 · Awaken";
+        BottomStatus.Text = "MOSS Awakening · Identity Confirm";
         SwitchStage("eye");
 
         BootEye.State = MossEye.EyeState.Idle;

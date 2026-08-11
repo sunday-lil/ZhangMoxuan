@@ -1,9 +1,9 @@
-﻿<UserControl x:Class="ZhangMoxuan.Controls.NetworkTopology"
+<UserControl x:Class="ZhangMoxuan.Controls.NetworkTopology"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              UseLayoutRounding="True"
              TextOptions.TextFormattingMode="Display"
-             Background="#050608">
+             Background="Transparent">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -12,23 +12,25 @@
         </Grid.RowDefinitions>
 
         <!-- 顶部标签栏 -->
-        <Border Grid.Row="0" Background="#0A0C10" BorderBrush="#1A1F26" BorderThickness="0,0,0,1" Padding="12,6">
+        <Border Grid.Row="0" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource GridBrush}" BorderThickness="0,0,0,1" Padding="16,8">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0"
-                           Text="UEG BACKBONE // GLOBAL NETWORK TOPOLOGY"
-                           FontFamily="{StaticResource MonoFont}"
-                           FontSize="12"
-                           Foreground="#FF1A1A"
+                           Text="UEG Backbone · Global Network Topology"
+                           FontFamily="{StaticResource SansFont}"
+                           FontSize="11"
+                           FontWeight="SemiBold"
+                           Foreground="{StaticResource TextPrimaryBrush}"
+                           Typography.Capitals="AllSmallCaps"
                            VerticalAlignment="Center"/>
                 <TextBlock Grid.Column="1"
                            x:Name="ClockText"
                            FontFamily="{StaticResource MonoFont}"
                            FontSize="11"
-                           Foreground="#9AA0A6"
+                           Foreground="{StaticResource TextTertiaryBrush}"
                            VerticalAlignment="Center"/>
             </Grid>
         </Border>
@@ -37,19 +39,19 @@
         <Canvas Grid.Row="1" x:Name="MapCanvas" ClipToBounds="True"/>
 
         <!-- 底部统计栏（右下角） -->
-        <Border Grid.Row="2" Background="#0A0C10" BorderBrush="#1A1F26" BorderThickness="0,1,0,0" Padding="12,5">
+        <Border Grid.Row="2" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource GridBrush}" BorderThickness="0,1,0,0" Padding="16,6">
             <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-                <StackPanel Orientation="Horizontal" Margin="0,0,20,0">
-                    <TextBlock Text="ONLINE " FontFamily="{StaticResource MonoFont}" FontSize="11" Foreground="#9AA0A6" VerticalAlignment="Center"/>
-                    <TextBlock x:Name="NodesStat" Text="0/0" FontFamily="{StaticResource MonoFont}" FontSize="11" Foreground="#FF1A1A" VerticalAlignment="Center"/>
+                <StackPanel Orientation="Horizontal" Margin="0,0,24,0">
+                    <TextBlock Text="ONLINE " FontFamily="{StaticResource SansFont}" FontSize="10" Foreground="{StaticResource TextTertiaryBrush}" VerticalAlignment="Center" Typography.Capitals="AllSmallCaps"/>
+                    <TextBlock x:Name="NodesStat" Text="0/0" FontFamily="{StaticResource MonoFont}" FontSize="11" Foreground="{StaticResource RedBrush}" VerticalAlignment="Center"/>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0,0,20,0">
-                    <TextBlock Text="BW " FontFamily="{StaticResource MonoFont}" FontSize="11" Foreground="#9AA0A6" VerticalAlignment="Center"/>
-                    <TextBlock x:Name="BandwidthStat" Text="0 Tbps" FontFamily="{StaticResource MonoFont}" FontSize="11" Foreground="#FF1A1A" VerticalAlignment="Center"/>
+                <StackPanel Orientation="Horizontal" Margin="0,0,24,0">
+                    <TextBlock Text="BW " FontFamily="{StaticResource SansFont}" FontSize="10" Foreground="{StaticResource TextTertiaryBrush}" VerticalAlignment="Center" Typography.Capitals="AllSmallCaps"/>
+                    <TextBlock x:Name="BandwidthStat" Text="0 Tbps" FontFamily="{StaticResource MonoFont}" FontSize="11" Foreground="{StaticResource RedBrush}" VerticalAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="LAT " FontFamily="{StaticResource MonoFont}" FontSize="11" Foreground="#9AA0A6" VerticalAlignment="Center"/>
-                    <TextBlock x:Name="LatencyStat" Text="0 ms" FontFamily="{StaticResource MonoFont}" FontSize="11" Foreground="#FF1A1A" VerticalAlignment="Center"/>
+                    <TextBlock Text="LAT " FontFamily="{StaticResource SansFont}" FontSize="10" Foreground="{StaticResource TextTertiaryBrush}" VerticalAlignment="Center" Typography.Capitals="AllSmallCaps"/>
+                    <TextBlock x:Name="LatencyStat" Text="0 ms" FontFamily="{StaticResource MonoFont}" FontSize="11" Foreground="{StaticResource RedBrush}" VerticalAlignment="Center"/>
                 </StackPanel>
             </StackPanel>
         </Border>

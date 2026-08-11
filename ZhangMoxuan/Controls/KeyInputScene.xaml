@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="ZhangMoxuan.Controls.KeyInputScene"
+<UserControl x:Class="ZhangMoxuan.Controls.KeyInputScene"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              Background="{StaticResource BgBrush}"
@@ -10,7 +10,7 @@
             <Setter Property="FontSize" Value="22"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Foreground" Value="{StaticResource RedBrightBrush}"/>
-            <Setter Property="Background" Value="#0A0C10"/>
+            <Setter Property="Background" Value="{StaticResource ElevatedBrush}"/>
             <Setter Property="BorderBrush" Value="{StaticResource RedBrush}"/>
             <Setter Property="BorderThickness" Value="1.5"/>
             <Setter Property="Margin" Value="4"/>
@@ -63,7 +63,7 @@
                            FontFamily="{StaticResource MonoFont}" FontSize="68" FontWeight="Bold"
                            Foreground="{StaticResource RedBrush}" HorizontalAlignment="Center">
                     <TextBlock.Effect>
-                        <DropShadowEffect x:Name="CountdownGlow" Color="#FF1A1A" BlurRadius="28" ShadowDepth="0" Opacity="0.9"/>
+                        <DropShadowEffect x:Name="CountdownGlow" Color="#D8434C" BlurRadius="22" ShadowDepth="0" Opacity="0.7"/>
                     </TextBlock.Effect>
                 </TextBlock>
             </StackPanel>
@@ -87,7 +87,7 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Style="{StaticResource PanelLabel}" Text="// ROOT SERVER 01"/>
+                    <TextBlock Grid.Row="0" Style="{StaticResource PanelLabel}" Text="Root Server 01"/>
                     <TextBlock Grid.Row="1" FontFamily="{StaticResource MonoFont}" FontSize="14" FontWeight="Bold"
                                Foreground="{StaticResource TextWhiteBrush}" Text="北京根服务器" Margin="0,4,0,2"/>
                     <TextBlock Grid.Row="2" Style="{StaticResource PanelLabel}" Foreground="{StaticResource RedDimBrush}"
@@ -109,7 +109,7 @@
                         <TextBlock Style="{StaticResource PanelLabel}" Text="LAT  39.9042° N"/>
                         <TextBlock Style="{StaticResource PanelLabel}" Text="LON 116.4074° E" Margin="0,2,0,0"/>
                         <TextBlock Style="{StaticResource PanelLabel}" Text="DEPTH  -842 M" Margin="0,2,0,0"/>
-                        <TextBlock Style="{StaticResource PanelLabel}" Text="UPLINK  550W // Q-BUS" Margin="0,2,0,0"/>
+                        <TextBlock Style="{StaticResource PanelLabel}" Text="UPLINK  ·  550W Q-BUS" Margin="0,2,0,0"/>
                     </StackPanel>
                 </Grid>
             </Border>
@@ -153,12 +153,12 @@
 
                 <!-- 认证失败闪烁警告（覆盖中区） -->
                 <Border x:Name="FailText" Visibility="Collapsed" Background="#B0000000" CornerRadius="2">
-                    <TextBlock Text="AUTH FAILED // RETRY"
+                    <TextBlock Text="AUTH FAILED · RETRY"
                                FontFamily="{StaticResource MonoFont}" FontSize="34" FontWeight="Bold"
                                Foreground="{StaticResource RedBrightBrush}"
                                HorizontalAlignment="Center" VerticalAlignment="Center">
                         <TextBlock.Effect>
-                            <DropShadowEffect Color="#FF1A1A" BlurRadius="20" ShadowDepth="0" Opacity="1"/>
+                            <DropShadowEffect Color="#D8434C" BlurRadius="16" ShadowDepth="0" Opacity="0.8"/>
                         </TextBlock.Effect>
                     </TextBlock>
                 </Border>
@@ -174,7 +174,7 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Style="{StaticResource PanelLabel}" Text="// DIGITAL LIFE CARD"/>
+                    <TextBlock Grid.Row="0" Style="{StaticResource PanelLabel}" Text="Digital Life Card"/>
                     <TextBlock Grid.Row="1" FontFamily="{StaticResource MonoFont}" FontSize="14" FontWeight="Bold"
                                Foreground="{StaticResource TextWhiteBrush}" Text="图恒宇 / 图丫丫" Margin="0,4,0,2"/>
                     <TextBlock Grid.Row="2" Style="{StaticResource PanelLabel}" Foreground="{StaticResource RedDimBrush}"
@@ -188,7 +188,7 @@
                                 <TextBlock x:Name="CardStateText" FontFamily="{StaticResource MonoFont}" FontSize="16" FontWeight="Bold"
                                            Foreground="{StaticResource RedBrush}" Text="CARD INSERTED"/>
                             </StackPanel>
-                            <TextBlock Style="{StaticResource PanelLabel}" Text="HOST // 550W MOSS" Margin="0,6,0,0"/>
+                            <TextBlock Style="{StaticResource PanelLabel}" Text="HOST · 550W MOSS" Margin="0,6,0,0"/>
                         </StackPanel>
                     </Border>
 
@@ -210,7 +210,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" Style="{StaticResource PanelLabel}" Text="// SYSTEM LOG" Margin="0,0,0,4"/>
+                <TextBlock Grid.Row="0" Style="{StaticResource PanelLabel}" Text="System Log" Margin="0,0,0,4"/>
                 <TextBox Grid.Row="1" x:Name="LogBox"
                          Background="Transparent"
                          Foreground="{StaticResource TextBrush}"

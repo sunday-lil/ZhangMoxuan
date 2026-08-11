@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -121,8 +121,8 @@ public partial class KeyInputScene : UserControl
         if (_remainingSeconds <= 30 && !_finished)
         {
             CountdownText.Foreground = (Brush)FindResource("RedBrightBrush");
-            CountdownGlow.Color = Color.FromRgb(0xFF, 0x38, 0x38);
-            CountdownGlow.BlurRadius = 36;
+            CountdownGlow.Color = Color.FromRgb(0xF2, 0x55, 0x5E);
+            CountdownGlow.BlurRadius = 28;
         }
     }
 
@@ -176,7 +176,7 @@ public partial class KeyInputScene : UserControl
             {
                 Width = 46,
                 Height = 58,
-                Background = new SolidColorBrush(Color.FromRgb(0x05, 0x06, 0x08)),
+                Background = new SolidColorBrush(Color.FromRgb(0x0A, 0x0E, 0x14)),
                 BorderBrush = dim,
                 BorderThickness = new Thickness(1.5),
                 Margin = new Thickness(3),
@@ -277,7 +277,7 @@ public partial class KeyInputScene : UserControl
         _timer.Stop();
         _countdownPulse.Stop();
         CountdownText.Foreground = (Brush)FindResource("BlueBrush");
-        CountdownGlow.Color = Color.FromRgb(0x1E, 0x6F, 0xFF);
+        CountdownGlow.Color = Color.FromRgb(0x3A, 0x7B, 0xFF);
         SetServerStatus("ONLINE", (Brush)FindResource("BlueBrush"));
         StatusDot.Fill = (Brush)FindResource("BlueBrush");
         CardStateText.Text = "NEURAL UPLINK";

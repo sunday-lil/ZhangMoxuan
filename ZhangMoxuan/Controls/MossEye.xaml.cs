@@ -134,40 +134,40 @@ public partial class MossEye : UserControl
                 breath.KeyFrames.Add(new LinearDoubleKeyFrame(0.85, KeyTime.FromTimeSpan(TimeSpan.FromSeconds(0))));
                 breath.KeyFrames.Add(new LinearDoubleKeyFrame(1.0, KeyTime.FromTimeSpan(TimeSpan.FromSeconds(1))));
                 breath.KeyFrames.Add(new LinearDoubleKeyFrame(0.85, KeyTime.FromTimeSpan(TimeSpan.FromSeconds(2))));
-                color = Color.FromRgb(0xFF, 0x1A, 0x1A);
-                blur = 25;
+                color = Color.FromRgb(0x8A, 0x3A, 0x42);   // RedMute
+                blur = 18;
                 break;
             case EyeState.Observing:
                 breath.KeyFrames.Add(new LinearDoubleKeyFrame(0.9, KeyTime.FromTimeSpan(TimeSpan.FromSeconds(0))));
                 breath.KeyFrames.Add(new LinearDoubleKeyFrame(1.05, KeyTime.FromTimeSpan(TimeSpan.FromSeconds(0.6))));
                 breath.KeyFrames.Add(new LinearDoubleKeyFrame(0.9, KeyTime.FromTimeSpan(TimeSpan.FromSeconds(1.2))));
-                color = Color.FromRgb(0xFF, 0x2A, 0x2A);
-                blur = 30;
+                color = Color.FromRgb(0xD8, 0x43, 0x4C);   // MossRed
+                blur = 22;
                 break;
             case EyeState.Analyzing:
                 breath.KeyFrames.Add(new LinearDoubleKeyFrame(0.7, KeyTime.FromTimeSpan(TimeSpan.FromSeconds(0))));
                 breath.KeyFrames.Add(new LinearDoubleKeyFrame(1.1, KeyTime.FromTimeSpan(TimeSpan.FromSeconds(0.25))));
                 breath.KeyFrames.Add(new LinearDoubleKeyFrame(0.7, KeyTime.FromTimeSpan(TimeSpan.FromSeconds(0.5))));
-                color = Color.FromRgb(0xFF, 0x38, 0x38);
-                blur = 38;
+                color = Color.FromRgb(0xF2, 0x55, 0x5E);   // MossRedBright
+                blur = 28;
                 break;
             case EyeState.Speaking:
                 breath.KeyFrames.Add(new LinearDoubleKeyFrame(0.95, KeyTime.FromTimeSpan(TimeSpan.FromSeconds(0))));
                 breath.KeyFrames.Add(new LinearDoubleKeyFrame(1.0, KeyTime.FromTimeSpan(TimeSpan.FromSeconds(0.4))));
                 breath.KeyFrames.Add(new LinearDoubleKeyFrame(0.95, KeyTime.FromTimeSpan(TimeSpan.FromSeconds(0.8))));
-                color = Color.FromRgb(0xFF, 0x44, 0x44);
-                blur = 32;
+                color = Color.FromRgb(0xF2, 0x55, 0x5E);   // MossRedBright
+                blur = 24;
                 break;
             case EyeState.Alert:
                 breath.KeyFrames.Add(new LinearDoubleKeyFrame(0.6, KeyTime.FromTimeSpan(TimeSpan.FromSeconds(0))));
                 breath.KeyFrames.Add(new LinearDoubleKeyFrame(1.15, KeyTime.FromTimeSpan(TimeSpan.FromSeconds(0.18))));
                 breath.KeyFrames.Add(new LinearDoubleKeyFrame(0.6, KeyTime.FromTimeSpan(TimeSpan.FromSeconds(0.36))));
-                color = Color.FromRgb(0xFF, 0x00, 0x00);
-                blur = 45;
+                color = Color.FromRgb(0xFF, 0x3A, 0x44);   // Alert: 鲜红但不过曝
+                blur = 32;
                 break;
             default:
-                color = Color.FromRgb(0xFF, 0x1A, 0x1A);
-                blur = 25;
+                color = Color.FromRgb(0x8A, 0x3A, 0x42);
+                blur = 18;
                 break;
         }
 
