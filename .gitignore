@@ -6,6 +6,7 @@ publish/
 # IDE
 .vs/
 .vscode/
+.trae/
 *.user
 *.suo
 
