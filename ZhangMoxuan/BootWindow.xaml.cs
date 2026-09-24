@@ -69,6 +69,12 @@ public partial class BootWindow : Window
     {
         InitializeComponent();
         Loaded += BootWindow_Loaded;
+        // 窗口关闭时停掉全部定时器，避免关闭后仍持续 tick 导致对象无法回收
+        Closed += (_, _) =>
+        {
+            _clock.Stop();
+            _scanTimer.Stop();
+        };
     }
 
     private void BootWindow_Loaded(object sender, RoutedEventArgs e)
