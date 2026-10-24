@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="docs/icon.png" width="112" alt="MOSS 之眼图标">
+
 # 张莫轩 · 550W / MOSS
 
 **基于《流浪地球》系列的 550W 智能量子计算机桌面系统复刻**
