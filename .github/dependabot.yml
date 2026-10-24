@@ -4,3 +4,8 @@ updates:
     directory: "/"
     schedule:
       interval: "monthly"
+    # 把多个 Action 的升级合并到一个 PR，避免每次扫描开一堆 PR。
+    groups:
+      github-actions:
+        patterns:
+          - "*"
