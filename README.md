@@ -64,7 +64,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\smoke-test.ps1
 | 参数 | 说明 |
 |------|------|
 | `--skip-boot` | 跳过 4 阶段开机自检，直接进入主控台 |
-| `--capture [目录]` | 屏幕外渲染全部 6 个页面为 PNG 后退出；不传目录时输出到可执行文件旁的 `screenshots/` |
+| `--capture [目录]` | 屏幕外渲染全部 7 张页面（6 个功能页 + 自检）为 PNG 后退出；不传目录时输出到可执行文件旁的 `screenshots/` |
 
 ```powershell
 # 重新生成 README 截图

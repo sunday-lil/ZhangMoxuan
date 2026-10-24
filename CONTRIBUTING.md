@@ -23,7 +23,7 @@ dotnet run --project ZhangMoxuan/ZhangMoxuan.csproj
 | 参数 | 作用 |
 |------|------|
 | `--skip-boot` | 跳过 4 阶段开机自检，直接进入主控台 |
-| `--capture [目录]` | 在屏幕外渲染 6 个页面为 PNG（默认输出到可执行文件旁的 `screenshots/`） |
+| `--capture [目录]` | 在屏幕外渲染全部 7 张页面（6 个功能页 + 自检）为 PNG（默认输出到可执行文件旁的 `screenshots/`） |
 
 ```powershell
 # 快速调试
