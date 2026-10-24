@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 使用问题与讨论
+    url: https://github.com/sunday-lil/ZhangMoxuan/discussions
+    about: 不确定是不是 bug、想讨论设定或展示效果，请使用 Discussions。
+  - name: 安全漏洞
+    url: https://github.com/sunday-lil/ZhangMoxuan/security/advisories/new
+    about: 请勿公开提交安全漏洞，使用私密安全公告。

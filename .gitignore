@@ -6,9 +6,13 @@ publish/
 # IDE
 .vs/
 .vscode/
+.idea/
 .trae/
 *.user
 *.suo
+
+# 日志
+*.log
 
 # Python
 __pycache__/

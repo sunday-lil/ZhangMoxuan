@@ -1,0 +1,49 @@
+name: 功能建议
+description: 提议新的模块、交互或视觉改进
+title: "[Feature] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        本项目的视觉基调是「高对比单色 HUD + 克制赤红」，
+        提案请尽量说明它如何融入现有风格，而不是单纯堆叠特效。
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: 想解决的问题
+      description: 当前体验中哪里不够好？
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 建议方案
+      description: 描述交互流程、状态变化与视觉表现
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 考虑过的替代方案
+    validations:
+      required: false
+
+  - type: input
+    id: film-reference
+    attributes:
+      label: 影片参考（可选）
+      description: 如果有对应的电影场景或 UI 参考，请描述
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: 确认
+      options:
+        - label: 我已搜索过现有 issue，未找到相同建议
+          required: true

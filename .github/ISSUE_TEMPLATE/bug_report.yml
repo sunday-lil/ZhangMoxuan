@@ -1,0 +1,84 @@
+name: Bug 报告
+description: 报告崩溃、显示异常、动画异常或交互问题
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢反馈。提交前请先搜索是否已有相同 issue，并尽量附上日志：
+        `%LOCALAPPDATA%\ZhangMoxuan\moss.log`
+
+  - type: input
+    id: version
+    attributes:
+      label: 应用版本
+      description: 主控台左下角显示的版本号，或 Release 标签
+      placeholder: v1.2.0
+    validations:
+      required: true
+
+  - type: input
+    id: windows
+    attributes:
+      label: Windows 版本
+      description: Win + R 输入 winver 可查看
+      placeholder: Windows 11 23H2 (22631.4169)
+    validations:
+      required: true
+
+  - type: input
+    id: display
+    attributes:
+      label: 显示器与缩放
+      description: 分辨率、刷新率、DPI 缩放比例
+      placeholder: 2560×1440 / 165 Hz / 125%
+    validations:
+      required: false
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      description: 请写出最小、可重复的步骤
+      placeholder: |
+        1. 启动应用
+        2. 按 ESC 跳过自检
+        3. 进入 Network 页面
+        4. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期望行为
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: 实际行为
+      description: 如有截图或录屏请直接拖入
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: 日志
+      description: 粘贴 moss.log 最后 30~50 行；没有日志可留空
+      render: text
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: 确认
+      options:
+        - label: 我已搜索过现有 issue，未找到相同问题
+          required: true
+        - label: 我使用的是最新 Release 或 main 分支构建
+          required: true

@@ -1,0 +1,67 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build (${{ matrix.configuration }})
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: [ Debug, Release ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore
+        run: dotnet restore ZhangMoxuan.sln
+
+      - name: Build
+        run: dotnet build ZhangMoxuan.sln -c ${{ matrix.configuration }} --no-restore
+
+      - name: Publish single-file executable
+        if: matrix.configuration == 'Release' && github.event_name == 'workflow_dispatch'
+        run: >
+          dotnet publish ZhangMoxuan/ZhangMoxuan.csproj
+          -c Release -r win-x64 --self-contained true
+          -p:PublishSingleFile=true
+          -p:IncludeNativeLibrariesForSelfExtract=true
+          -o publish
+
+      - name: Upload single-file executable
+        if: matrix.configuration == 'Release' && github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ZhangMoxuan-win-x64
+          path: publish/ZhangMoxuan.exe
+          retention-days: 7
+
+  smoke:
+    name: UI smoke test
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Build and capture all pages
+        run: powershell -NoProfile -ExecutionPolicy Bypass -File tools/smoke-test.ps1
