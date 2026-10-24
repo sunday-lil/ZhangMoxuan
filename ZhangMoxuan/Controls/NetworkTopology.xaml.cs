@@ -269,8 +269,11 @@ public partial class NetworkTopology : UserControl
                     FontFamily = mono, FontSize = 9,
                     Foreground = red
                 };
-                Canvas.SetLeft(label, px + 8);
-                Canvas.SetTop(label, py - 15);
+                // 根服务器标签：东京靠近东侧边缘，标签放到左侧，避免与北京标签重叠。
+                var labelLeft = n.Name == "TOKYO-ROOT" ? px - 58 : px + 8;
+                var labelTop = n.Name == "TOKYO-ROOT" ? py + 6 : py - 15;
+                Canvas.SetLeft(label, labelLeft);
+                Canvas.SetTop(label, labelTop);
                 MapCanvas.Children.Add(label);
             }
             else
@@ -285,15 +288,19 @@ public partial class NetworkTopology : UserControl
                 MapCanvas.Children.Add(dot);
                 _nodeDots.Add(dot);
 
-                var label = new TextBlock
+                // 只标注分布较开的枢纽城市，避免东亚/欧洲标签互相覆盖。
+                if (n.Name is "NEW-YORK" or "LONDON" or "MOSCOW" or "SYDNEY" or "SINGAPORE")
                 {
-                    Text = n.Name,
-                    FontFamily = mono, FontSize = 8,
-                    Foreground = textBrush, Opacity = 0.65
-                };
-                Canvas.SetLeft(label, px + 5);
-                Canvas.SetTop(label, py + 4);
-                MapCanvas.Children.Add(label);
+                    var label = new TextBlock
+                    {
+                        Text = n.Name,
+                        FontFamily = mono, FontSize = 8,
+                        Foreground = textBrush, Opacity = 0.65
+                    };
+                    Canvas.SetLeft(label, px + 5);
+                    Canvas.SetTop(label, py + 4);
+                    MapCanvas.Children.Add(label);
+                }
             }
         }
 

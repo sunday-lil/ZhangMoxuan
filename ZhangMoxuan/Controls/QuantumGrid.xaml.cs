@@ -26,8 +26,8 @@ public partial class QuantumGrid : UserControl
     private Brush _redDim = null!;
     private Brush _red = null!;
     private Brush _redBright = null!;
-    private int _cols = 32;
-    private int _rows = 16;
+    private int _cols = 48;
+    private int _rows = 24;
 
     public QuantumGrid()
     {
@@ -66,22 +66,32 @@ public partial class QuantumGrid : UserControl
         {
             var dot = new Ellipse
             {
-                Width = 3, Height = 3,
+                Width = 2.6, Height = 2.6,
                 Fill = _redDim,
                 Opacity = 0.4
             };
-            Canvas.SetLeft(dot, startX + x * cell - 1.5);
-            Canvas.SetTop(dot, startY + y * cell - 1.5);
+            Canvas.SetLeft(dot, startX + x * cell - 1.3);
+            Canvas.SetTop(dot, startY + y * cell - 1.3);
             Layer0.Children.Add(dot);
             _qubits.Add(new Qubit { X = x, Y = y, Dot = dot, State = 0 });
         }
 
-        // 预生成纠缠连接线（稀疏）
+        // 预生成纠缠连接线：大部分连接邻近比特，形成可信的纠缠晶格；少量长程连接。
         var rng = new Random(42);
-        for (int i = 0; i < 40; i++)
+        for (int i = 0; i < 54; i++)
         {
             var a = _qubits[rng.Next(_qubits.Count)];
-            var b = _qubits[rng.Next(_qubits.Count)];
+            Qubit b;
+            if (i % 6 == 0)
+            {
+                b = _qubits[rng.Next(_qubits.Count)];
+            }
+            else
+            {
+                var bx = Math.Clamp(a.X + rng.Next(-4, 5), 0, _cols - 1);
+                var by = Math.Clamp(a.Y + rng.Next(-4, 5), 0, _rows - 1);
+                b = _qubits[by * _cols + bx];
+            }
             if (a == b) continue;
             var line = new Line
             {
@@ -102,6 +112,8 @@ public partial class QuantumGrid : UserControl
 
     private void Tick(object? sender, EventArgs e)
     {
+        if (_qubits.Count == 0) return;
+
         // 流动：随机一些比特改变状态，形成"波"
         var rng = Random.Shared;
 

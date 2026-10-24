@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ctl="clr-namespace:ZhangMoxuan.Controls"
         Title="550W" Height="720" Width="1280"
+        Icon="pack://application:,,,/Assets/moss.ico"
         WindowStyle="None" WindowState="Maximized"
         Background="{StaticResource BgBrush}"
         WindowStartupLocation="CenterScreen"
@@ -146,6 +147,9 @@
                 <TextBlock x:Name="BottomStatus" Text="INITIALIZING..." FontFamily="{StaticResource SansFont}" FontSize="11"
                            Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" Typography.Capitals="AllSmallCaps"/>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <TextBlock Text="ESC · SKIP" FontFamily="{StaticResource SansFont}" FontSize="9"
+                               Foreground="{StaticResource TextTertiaryBrush}" Margin="0,0,18,0"
+                               Typography.Capitals="AllSmallCaps"/>
                     <TextBlock Text="550W · UEG" FontFamily="{StaticResource SansFont}" FontSize="10"
                                Foreground="{StaticResource TextTertiaryBrush}" Typography.Capitals="AllSmallCaps"/>
                 </StackPanel>

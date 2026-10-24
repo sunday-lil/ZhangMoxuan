@@ -287,7 +287,8 @@ public partial class CrisisTimeline : UserControl
                 Foreground = gray
             };
             Canvas.SetLeft(nv.NameLabel, x - 45);
-            Canvas.SetTop(nv.NameLabel, timelineY + 30);
+            // 相邻事件（2075/2078）错开两行，避免英文名称互相覆盖。
+            Canvas.SetTop(nv.NameLabel, timelineY + (i % 2 == 0 ? 30 : 46));
             TimelineCanvas.Children.Add(nv.NameLabel);
 
             _nodes.Add(nv);
@@ -309,6 +310,8 @@ public partial class CrisisTimeline : UserControl
 
     private void AnimatePulse()
     {
+        if (_nowScale is null || _nodes.Count == 0) return;
+
         _pulsePhase += 0.08;
         var sBright = 1.0 + 0.5 * (0.5 + 0.5 * Math.Sin(_pulsePhase));
         var sDim = 1.0 + 0.15 * (0.5 + 0.5 * Math.Sin(_pulsePhase));

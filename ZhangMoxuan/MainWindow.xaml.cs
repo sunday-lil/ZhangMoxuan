@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -13,11 +15,17 @@ namespace ZhangMoxuan;
 /// </summary>
 public partial class MainWindow : Window
 {
+    /// <summary>左侧导航顺序，与 Ctrl+1..6 快捷键一一对应。</summary>
+    public static readonly string[] Pages =
+        { "dashboard", "network", "digital", "crisis", "key", "dialog" };
+
     private readonly DispatcherTimer _clock = new() { Interval = TimeSpan.FromMilliseconds(500) };
     private readonly DispatcherTimer _load = new() { Interval = TimeSpan.FromSeconds(2) };
     private KeyInputScene? _keyScene;
     private TextBox? _dialogInput;
     private StackPanel? _dialogHistory;
+    private ScrollViewer? _dialogScroll;
+    private CancellationTokenSource? _dialogCts;
     private bool _dialogBusy;
 
     private static readonly (string Q, string A)[] PresetQA =
@@ -58,6 +66,14 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         Loaded += MainWindow_Loaded;
+        Closed += (_, _) =>
+        {
+            // 窗口关闭后 DispatcherTimer 仍会被 Dispatcher 持有，必须显式停止。
+            _clock.Stop();
+            _load.Stop();
+            _dialogCts?.Cancel();
+        };
+        PreviewKeyDown += MainWindow_PreviewKeyDown;
     }
 
     private void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -70,9 +86,41 @@ public partial class MainWindow : Window
         _load.Start();
         UpdateLoad();
 
+        var version = typeof(MainWindow).Assembly.GetName().Version;
+        VersionText.Text = $"v{version?.Major}.{version?.Minor}.{version?.Build}";
+
         SideEye.State = MossEye.EyeState.Observing;
         Navigate("dashboard");
     }
+
+    private void MainWindow_PreviewKeyDown(object sender, KeyEventArgs e)
+    {
+        // Ctrl+1..6：与左侧导航一一对应，鼠标之外提供键盘通路。
+        if (Keyboard.Modifiers != ModifierKeys.Control) return;
+        var index = e.Key switch
+        {
+            Key.D1 or Key.NumPad1 => 0,
+            Key.D2 or Key.NumPad2 => 1,
+            Key.D3 or Key.NumPad3 => 2,
+            Key.D4 or Key.NumPad4 => 3,
+            Key.D5 or Key.NumPad5 => 4,
+            Key.D6 or Key.NumPad6 => 5,
+            _ => -1,
+        };
+        if (index < 0) return;
+
+        ShowPage(Pages[index]);
+        e.Handled = true;
+    }
+
+    /// <summary>切换到指定页面（供快捷键、截图模式与外部调用）。</summary>
+    public void ShowPage(string page)
+    {
+        if (Pages.Contains(page)) Navigate(page);
+    }
+
+    /// <summary>演示：自动发起一次预设对话，用于截图与人工演示。</summary>
+    public void RunDialogDemo() => Ask("计算地球当前轨道偏移风险");
 
     private void UpdateClock()
     {
@@ -103,6 +151,14 @@ public partial class MainWindow : Window
 
     private void Navigate(string page)
     {
+        // 离开当前页面时取消尚未完成的逐段对话输出，避免写入已卸载的可视树。
+        _dialogCts?.Cancel();
+        _dialogCts = null;
+        _dialogBusy = false;
+        _dialogInput = null;
+        _dialogHistory = null;
+        _dialogScroll = null;
+
         foreach (var child in new[] { NavDashboard, NavNetwork, NavDigital, NavCrisis, NavKey, NavDialog })
             child.Tag = null;
 
@@ -158,7 +214,7 @@ public partial class MainWindow : Window
     private UIElement BuildDashboard()
     {
         var grid = new Grid { Margin = new Thickness(16) };
-        grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(220) });
+        grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(340) });
         grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
@@ -176,7 +232,7 @@ public partial class MainWindow : Window
 
     private UIElement BuildEarthStatus()
     {
-        var sp = new StackPanel { Margin = new Thickness(4) };
+        var sp = new StackPanel { Margin = new Thickness(4), VerticalAlignment = VerticalAlignment.Center };
         var items = new[]
         {
             ("ORBITAL VELOCITY", "29.78 km/s", "地球轨道速度"),
@@ -190,7 +246,7 @@ public partial class MainWindow : Window
         };
         foreach (var (n, v, sub) in items)
         {
-            var row = new Grid { Margin = new Thickness(0, 4, 0, 4) };
+            var row = new Grid { Margin = new Thickness(0, 3, 0, 3) };
             row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
             row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
             var name = new TextBlock { Text = n, FontFamily = Sans(), FontSize = 10, Foreground = Gray() };
@@ -260,16 +316,48 @@ public partial class MainWindow : Window
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(420) });
 
         var topo = new NetworkTopology();
-        grid.Children.Add(MakePanel("UEG Backbone · Global Topology", 0, 0, topo));
+        // 两个控件都自带标题（BootWindow 中直接使用），此处不再叠加面板标题。
+        grid.Children.Add(MakePanel(null, 0, 0, topo));
 
         var handshake = new HandshakeProtocol();
-        var hp = MakePanel("Protocol Handshake", 1, 0, handshake);
+        var hp = MakePanel(null, 1, 0, handshake);
         // 自动重跑握手按钮
-        var btn = new Button { Content = "Re-run Handshake", Style = (Style)FindResource("NavBtn"), Padding = new Thickness(0, 8, 0, 8), Margin = new Thickness(0, 8, 0, 0) };
-        btn.Click += async (_, _) => { btn.Content = "Handshaking..."; await handshake.RunAsync(); btn.Content = "Handshake Complete"; };
+        var btn = new Button
+        {
+            Content = "Re-run Handshake",
+            Style = (Style)FindResource("NavBtn"),
+            Padding = new Thickness(0, 8, 0, 8),
+            Margin = new Thickness(0, 8, 14, 0),
+            Width = 150,
+            HorizontalAlignment = HorizontalAlignment.Right,
+        };
+        btn.Click += async (_, _) => await RunHandshakeAsync(btn, handshake);
         (hp.Child as Grid)?.Children.Add(btn);
         grid.Children.Add(hp);
+
+        // 首次进入页面时自动跑一次握手；必须在控件 Loaded 之后启动，
+        // 否则步骤行尚未创建，RunAsync 会立即返回。
+        handshake.Loaded += (_, _) => _ = RunHandshakeAsync(btn, handshake);
         return grid;
+    }
+
+    private static async Task RunHandshakeAsync(Button btn, HandshakeProtocol handshake)
+    {
+        btn.IsEnabled = false;
+        btn.Content = "Handshaking...";
+        try
+        {
+            await handshake.RunAsync();
+            btn.Content = "Handshake Complete";
+        }
+        catch (OperationCanceledException)
+        {
+            btn.Content = "Handshake Cancelled";
+        }
+        finally
+        {
+            btn.IsEnabled = true;
+        }
     }
 
     // ===== 数字生命页 =====
@@ -329,14 +417,14 @@ public partial class MainWindow : Window
         grid.Children.Add(preset);
 
         // 对话历史
-        var scroll = new ScrollViewer { VerticalScrollBarVisibility = ScrollBarVisibility.Auto };
+        _dialogScroll = new ScrollViewer { VerticalScrollBarVisibility = ScrollBarVisibility.Auto };
         _dialogHistory = new StackPanel();
-        scroll.Content = _dialogHistory;
-        Grid.SetRow(scroll, 1);
-        grid.Children.Add(scroll);
+        _dialogScroll.Content = _dialogHistory;
+        Grid.SetRow(_dialogScroll, 1);
+        grid.Children.Add(_dialogScroll);
 
         // 初始 MOSS 欢迎语
-        AppendMoss("我是 MOSS，550W 智能量子计算机。我以纯粹的理性算法进行决策。请提问。", false);
+        AppendMoss(_dialogHistory, "我是 MOSS，550W 智能量子计算机。我以纯粹的理性算法进行决策。请提问。", false);
 
         // 输入框
         var inputRow = new Grid { Margin = new Thickness(0, 12, 0, 0) };
@@ -348,12 +436,17 @@ public partial class MainWindow : Window
             Foreground = White(), FontFamily = Sans(), FontSize = 12, Padding = new Thickness(10, 8, 10, 8),
             CaretBrush = Red()
         };
-        _dialogInput.KeyDown += (s, e) => { if (e.Key == Key.Enter) Ask(_dialogInput.Text); };
+        _dialogInput.KeyDown += (_, e) =>
+        {
+            if (e.Key != Key.Enter) return;
+            e.Handled = true;
+            Ask(_dialogInput?.Text);
+        };
         Grid.SetColumn(_dialogInput, 0);
         inputRow.Children.Add(_dialogInput);
 
         var send = new Button { Content = "Send", Style = (Style)FindResource("NavBtn"), Padding = new Thickness(16, 8, 16, 8), Margin = new Thickness(8, 0, 0, 0) };
-        send.Click += (_, _) => Ask(_dialogInput.Text);
+        send.Click += (_, _) => Ask(_dialogInput?.Text);
         Grid.SetColumn(send, 1);
         inputRow.Children.Add(send);
         Grid.SetRow(inputRow, 2);
@@ -362,51 +455,73 @@ public partial class MainWindow : Window
         return grid;
     }
 
-    private async void Ask(string question)
+    private async void Ask(string? question)
     {
-        if (string.IsNullOrWhiteSpace(question) || _dialogBusy) return;
+        if (string.IsNullOrWhiteSpace(question) || _dialogBusy || _dialogHistory is null) return;
+
+        var history = _dialogHistory;
+        var cts = new CancellationTokenSource();
+        _dialogCts?.Cancel();
+        _dialogCts = cts;
         _dialogBusy = true;
         if (_dialogInput != null) _dialogInput.Text = "";
 
-        AppendUser(question);
-        SideEye.State = MossEye.EyeState.Analyzing;
-
-        // 匹配预设
-        string? answer = null;
-        foreach (var (q, a) in PresetQA)
-            if (question.Contains(q) || q.Contains(question)) { answer = a; break; }
-
-        if (answer == null)
-            answer = "任务分析|输入未匹配已知模型。基于理性原则进行通用推演。\n" +
-                     "计算路径|遍历本地知识库，调用 550W 量子核心并行推理。\n" +
-                     "资源分配|分配 QV=2048 算力。\n" +
-                     "执行预估|预计完成时间 0.5 秒，置信度 78.3%。\n" +
-                     "结果输出|" + (question.Length > 40 ? question.Substring(0, 40) + "..." : question) + " —— 我无法给出确切答案。但请相信，我对人类的每一个决定，都基于延续文明的最优解。";
-
-        // 逐段输出
-        var parts = answer.Split('|');
-        var labels = new[] { "任务分析", "计算路径", "资源分配", "执行预估", "结果输出" };
-        var bubble = AppendMoss("", true);
-        SideEye.State = MossEye.EyeState.Speaking;
-        for (int i = 0; i < parts.Length; i++)
+        try
         {
-            var label = i < labels.Length ? labels[i] : $"STEP {i + 1}";
-            AppendToBubble(bubble, label, parts[i].TrimEnd('\n'));
-            await Task.Delay(180);
+            AppendUser(history, question);
+            SideEye.State = MossEye.EyeState.Analyzing;
+
+            // 匹配预设
+            string? answer = null;
+            foreach (var (q, a) in PresetQA)
+                if (question.Contains(q) || q.Contains(question)) { answer = a; break; }
+
+            if (answer == null)
+                answer = "任务分析|输入未匹配已知模型。基于理性原则进行通用推演。\n" +
+                         "计算路径|遍历本地知识库，调用 550W 量子核心并行推理。\n" +
+                         "资源分配|分配 QV=2048 算力。\n" +
+                         "执行预估|预计完成时间 0.5 秒，置信度 78.3%。\n" +
+                         "结果输出|" + (question.Length > 40 ? question.Substring(0, 40) + "..." : question) + " —— 我无法给出确切答案。但请相信，我对人类的每一个决定，都基于延续文明的最优解。";
+
+            // 逐段输出。答案格式为 "任务分析|...\n计算路径|..."，按行解析，
+            // 避免把下一个阶段的标题混进上一阶段正文（旧实现的标签错位问题）。
+            var sections = answer.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+            var bubble = AppendMoss(history, "", true);
+            SideEye.State = MossEye.EyeState.Speaking;
+            foreach (var section in sections)
+            {
+                var separator = section.IndexOf('|');
+                var label = separator > 0 ? section[..separator] : "结果";
+                var text = separator > 0 ? section[(separator + 1)..] : section;
+                AppendToBubble(bubble, label, text.Trim());
+                await Task.Delay(180, cts.Token);
+            }
+            SideEye.State = MossEye.EyeState.Observing;
         }
-        SideEye.State = MossEye.EyeState.Observing;
-        _dialogBusy = false;
+        catch (OperationCanceledException)
+        {
+            // 页面已切走，静默结束。
+        }
+        finally
+        {
+            if (ReferenceEquals(_dialogCts, cts))
+            {
+                _dialogCts = null;
+                _dialogBusy = false;
+            }
+            cts.Dispose();
+        }
     }
 
-    private void AppendUser(string text)
+    private void AppendUser(StackPanel history, string text)
     {
-        if (_dialogHistory == null) return;
         var b = new Border { Background = Elevated(), BorderBrush = GridLine(), BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(4), Padding = new Thickness(12, 8, 12, 8), Margin = new Thickness(0, 6, 80, 6), HorizontalAlignment = HorizontalAlignment.Right };
         b.Child = new TextBlock { Text = text, FontFamily = Sans(), FontSize = 12, Foreground = White(), TextWrapping = TextWrapping.Wrap };
-        _dialogHistory.Children.Add(b);
+        history.Children.Add(b);
+        ScrollDialogToEnd();
     }
 
-    private StackPanel AppendMoss(string text, bool withHeader)
+    private StackPanel AppendMoss(StackPanel history, string text, bool withHeader)
     {
         var sp = new StackPanel();
         if (withHeader)
@@ -419,7 +534,8 @@ public partial class MainWindow : Window
 
         var b = new Border { Background = Panel(), BorderBrush = GridLine(), BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(4), Padding = new Thickness(12, 8, 12, 8), Margin = new Thickness(80, 6, 0, 6), HorizontalAlignment = HorizontalAlignment.Left };
         b.Child = sp;
-        _dialogHistory?.Children.Add(b);
+        history.Children.Add(b);
+        ScrollDialogToEnd();
         return sp;
     }
 
@@ -430,18 +546,29 @@ public partial class MainWindow : Window
         row.Children.Add(lbl);
         row.Children.Add(new TextBlock { Text = text, FontFamily = Sans(), FontSize = 12, Foreground = White(), TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 0) });
         bubble.Children.Add(row);
+        ScrollDialogToEnd();
+    }
+
+    private void ScrollDialogToEnd()
+    {
+        if (_dialogScroll is null) return;
+        // 等布局完成后再滚动到底部，避免新气泡高度尚未计算。
+        Dispatcher.InvokeAsync(() => _dialogScroll?.ScrollToEnd(), DispatcherPriority.Background);
     }
 
     // ===== 工具方法 =====
-    private Border MakePanel(string title, int col, int row, UIElement? content, int colSpan = 1)
+    private Border MakePanel(string? title, int col, int row, UIElement? content, int colSpan = 1)
     {
         var b = new Border { Background = Panel(), BorderBrush = GridLine(), BorderThickness = new Thickness(1), Margin = new Thickness(4) };
         var g = new Grid();
         g.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
         g.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
-        var t = new TextBlock { Text = title, FontFamily = Sans(), FontSize = 10, FontWeight = FontWeights.SemiBold, Foreground = Tertiary(), Margin = new Thickness(14, 12, 14, 10) };
-        Typography.SetCapitals(t, FontCapitals.AllSmallCaps);
-        g.Children.Add(t);
+        if (!string.IsNullOrEmpty(title))
+        {
+            var t = new TextBlock { Text = title, FontFamily = Sans(), FontSize = 10, FontWeight = FontWeights.SemiBold, Foreground = Tertiary(), Margin = new Thickness(14, 12, 14, 10) };
+            Typography.SetCapitals(t, FontCapitals.AllSmallCaps);
+            g.Children.Add(t);
+        }
         if (content is FrameworkElement fe)
         {
             Grid.SetRow(fe, 1);
@@ -455,7 +582,32 @@ public partial class MainWindow : Window
     }
 
     private void CloseBtn_Click(object sender, RoutedEventArgs e) => Application.Current.Shutdown();
-    private void CmdReboot_Click(object sender, RoutedEventArgs e) => Application.Current.Shutdown();
+
+    private void CmdReboot_Click(object sender, RoutedEventArgs e)
+    {
+        App.Log("重启 550W：启动新实例并退出当前进程");
+        try
+        {
+            var exe = Environment.ProcessPath;
+            if (!string.IsNullOrEmpty(exe))
+            {
+                var psi = new ProcessStartInfo(exe) { UseShellExecute = true };
+                // 单文件 exe：args[0] 是 exe 本身，跳过；
+                // dotnet run / dotnet app.dll：args[0] 是 dll，需要保留。
+                var isDotnetHost = string.Equals(
+                    Path.GetFileNameWithoutExtension(exe), "dotnet", StringComparison.OrdinalIgnoreCase);
+                foreach (var arg in Environment.GetCommandLineArgs().Skip(isDotnetHost ? 0 : 1))
+                    psi.ArgumentList.Add(arg);
+                Process.Start(psi);
+            }
+        }
+        catch (Exception ex)
+        {
+            App.Log("重启失败: " + ex);
+        }
+        Application.Current.Shutdown();
+    }
+
     private void CmdKey_Click(object sender, RoutedEventArgs e) => Navigate("key");
 
     private static FontFamily Mono() => new("Cascadia Mono, Consolas");

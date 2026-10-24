@@ -72,6 +72,16 @@ public partial class KeyInputScene : UserControl
         _input.Clear();
         UpdateCountdown();
         UpdateSlots();
+
+        // 复位上一次运行留下的视觉状态（成功/失败后再次进入场景时保持一致）。
+        CountdownText.Foreground = (Brush)FindResource("RedBrush");
+        CountdownGlow.Color = Color.FromRgb(0xD8, 0x43, 0x4C);
+        CountdownGlow.BlurRadius = 22;
+        FailText.Visibility = Visibility.Collapsed;
+        CardStateText.Text = "CARD INSERTED";
+        CardStateText.Foreground = (Brush)FindResource("RedBrush");
+        CardDot.Fill = (Brush)FindResource("RedBrush");
+
         SetServerStatus("AUTHENTICATING", (Brush)FindResource("AmberBrush"));
         StatusDot.Fill = (Brush)FindResource("AmberBrush");
         _timer.Start();

@@ -67,7 +67,7 @@ public partial class DigitalLifeCard : UserControl
 
         _pulseStoryboard = (Storyboard)FindResource("AvatarPulse");
         _blinkStoryboard = (Storyboard)FindResource("AccessBlink");
-        _pulseStoryboard.Begin();
+        _pulseStoryboard.Begin(this);
 
         _timer.Start();
     }
@@ -137,7 +137,7 @@ public partial class DigitalLifeCard : UserControl
             StatusText.Text = "UPLOADING";
             StatusText.Foreground = (Brush)FindResource("AmberBrush");
             AccessLight.Fill = (Brush)FindResource("AmberBrush");
-            _blinkStoryboard?.Begin();
+            _blinkStoryboard?.Begin(this);
         }
         else
         {

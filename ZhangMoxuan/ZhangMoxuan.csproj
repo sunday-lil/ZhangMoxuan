@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -7,12 +7,22 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\moss.ico</ApplicationIcon>
     <AssemblyName>ZhangMoxuan</AssemblyName>
     <RootNamespace>ZhangMoxuan</RootNamespace>
-    <Version>1.0.0</Version>
+    <Version>1.2.0</Version>
+    <FileVersion>1.2.0.0</FileVersion>
+    <AssemblyVersion>1.2.0.0</AssemblyVersion>
     <Company>UEG</Company>
     <Product>550W MOSS</Product>
+    <Description>550W / MOSS 智能量子计算机桌面系统复刻 · WPF</Description>
+    <Copyright>Copyright (c) 2026 sunday-lil</Copyright>
+    <RepositoryUrl>https://github.com/sunday-lil/ZhangMoxuan</RepositoryUrl>
     <AssemblyTitle>张莫轩 - 550W 智能量子计算机</AssemblyTitle>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\moss.ico" />
+  </ItemGroup>
 
 </Project>

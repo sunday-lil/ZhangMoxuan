@@ -32,6 +32,12 @@ public partial class MossEye : UserControl
         InitializeComponent();
         Loaded += MossEye_Loaded;
         SizeChanged += (_, _) => Rebuild();
+        Unloaded += (_, _) =>
+        {
+            // 控件被导航移除后停止瞳孔动画与旋转，避免动画时钟继续持有已卸载控件。
+            _stateStoryboard?.Stop();
+            ArcRotate.BeginAnimation(RotateTransform.AngleProperty, null);
+        };
     }
 
     private void MossEye_Loaded(object sender, RoutedEventArgs e)
@@ -94,15 +100,21 @@ public partial class MossEye : UserControl
         // 眼球
         Ball.Width = ballR * 2;
         Ball.Height = ballR * 2;
+        Ball.HorizontalAlignment = HorizontalAlignment.Left;
+        Ball.VerticalAlignment = VerticalAlignment.Top;
         Ball.RenderTransform = new TranslateTransform(cx - ballR, cy - ballR);
 
         InnerRing.Width = ballR * 2.4;
         InnerRing.Height = ballR * 2.4;
+        InnerRing.HorizontalAlignment = HorizontalAlignment.Left;
+        InnerRing.VerticalAlignment = VerticalAlignment.Top;
         InnerRing.RenderTransform = new TranslateTransform(cx - ballR * 1.2, cy - ballR * 1.2);
 
         // 瞳孔
         Pupil.Width = pupilR * 2;
         Pupil.Height = pupilR * 2;
+        Pupil.HorizontalAlignment = HorizontalAlignment.Left;
+        Pupil.VerticalAlignment = VerticalAlignment.Top;
         Pupil.RenderTransform = new TranslateTransform(cx - pupilR, cy - pupilR);
         PupilScale.CenterX = pupilR;
         PupilScale.CenterY = pupilR;
@@ -110,6 +122,8 @@ public partial class MossEye : UserControl
         // 高光
         Glint.Width = pupilR * 0.4;
         Glint.Height = pupilR * 0.4;
+        Glint.HorizontalAlignment = HorizontalAlignment.Left;
+        Glint.VerticalAlignment = VerticalAlignment.Top;
         Glint.RenderTransform = new TranslateTransform(cx - pupilR * 0.7, cy - pupilR * 0.7);
     }
 

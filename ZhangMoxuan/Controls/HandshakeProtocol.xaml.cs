@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -35,12 +35,12 @@ public partial class HandshakeProtocol : UserControl
     private static readonly string[] StepNames =
     {
         "TCP 三次握手",
-        "TLS 1.3 量子加密协商",
+        "TLS 1.3 量子加密",
         "UEG BACKBONE 认证",
-        "根服务器同步 (北京/东京/华盛顿)",
+        "根服务器同步 · 三地",
         "量子纠缠通道建立",
         "MOSS 身份验证",
-        "数字生命协议加载",
+        "数字生命协议",
     };
 
     /// <summary>所有步骤执行完成后触发。</summary>
@@ -79,12 +79,12 @@ public partial class HandshakeProtocol : UserControl
         for (int i = 0; i < StepNames.Length; i++)
         {
             var row = new Grid { Margin = new Thickness(0, 4, 0, 4) };
-            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(30) });     // 序号
+            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(22) });    // 序号
             row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }); // 协议名
-            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(16) });     // 状态灯
-            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(64) });     // 状态文字
-            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(56) });     // 耗时
-            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(110) });    // 进度条
+            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(12) });    // 状态灯
+            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(54) });    // 状态文字
+            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(46) });    // 耗时
+            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(92) });    // 进度条
 
             var num = new TextBlock
             {
@@ -134,8 +134,8 @@ public partial class HandshakeProtocol : UserControl
             row.Children.Add(elapsed);
 
             // 每步进度条
-            var barHost = new Grid { Width = 100, Height = 6, VerticalAlignment = VerticalAlignment.Center, ClipToBounds = true };
-            var barBg = new Rectangle { Fill = gridBrush, Width = 100, Height = 6 };
+            var barHost = new Grid { Width = 84, Height = 6, VerticalAlignment = VerticalAlignment.Center, ClipToBounds = true };
+            var barBg = new Rectangle { Fill = gridBrush, Width = 84, Height = 6 };
             var barFill = new Rectangle { Fill = redBrush, Width = 0, Height = 6, HorizontalAlignment = HorizontalAlignment.Left };
             barHost.Children.Add(barBg);
             barHost.Children.Add(barFill);
@@ -149,7 +149,7 @@ public partial class HandshakeProtocol : UserControl
                 Elapsed = elapsed,
                 StatusText = statusText,
                 ProgressFill = barFill,
-                ProgressMax = 100,
+                ProgressMax = 84,
                 State = StepState.Pending
             });
         }
@@ -242,13 +242,15 @@ public partial class HandshakeProtocol : UserControl
     /// 依次执行各握手步骤，每步耗时随机 200~600ms。
     /// 完成后触发 <see cref="HandshakeCompleted"/>。
     /// </summary>
-    public async Task RunAsync()
+    public async Task RunAsync(CancellationToken cancellationToken = default)
     {
+        if (_rows.Count == 0) return;
+
         // 重置所有步骤
         for (int i = 0; i < _rows.Count; i++)
             SetState(i, StepState.Pending);
         UpdateOverall(0);
-        await Task.Delay(150);
+        await Task.Delay(150, cancellationToken);
 
         for (int i = 0; i < _rows.Count; i++)
         {
@@ -259,12 +261,12 @@ public partial class HandshakeProtocol : UserControl
             var anim = new DoubleAnimation(0, _rows[i].ProgressMax, TimeSpan.FromMilliseconds(delay));
             _rows[i].ProgressFill.BeginAnimation(WidthProperty, anim);
 
-            await Task.Delay(delay);
+            await Task.Delay(delay, cancellationToken);
 
             var final = (i == _rows.Count - 1) ? StepState.Ready : StepState.Ok;
             SetState(i, final, delay);
             UpdateOverall((i + 1.0) / _rows.Count);
-            await Task.Delay(80);
+            await Task.Delay(80, cancellationToken);
         }
 
         HandshakeCompleted?.Invoke(this, EventArgs.Empty);

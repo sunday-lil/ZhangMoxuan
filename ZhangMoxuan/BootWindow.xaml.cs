@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
@@ -11,6 +12,7 @@ namespace ZhangMoxuan;
 
 /// <summary>
 /// 550W 多阶段开机自检：固件加载 → 握手协议 → 量子核心激活 → MOSS 之眼觉醒。
+/// 按 ESC 可跳过；窗口关闭时整个序列会被取消，不会在退出后继续创建主窗口。
 /// </summary>
 public partial class BootWindow : Window
 {
@@ -19,6 +21,8 @@ public partial class BootWindow : Window
     private readonly DispatcherTimer _clock = new() { Interval = TimeSpan.FromMilliseconds(200) };
     private readonly DispatcherTimer _scanTimer = new() { Interval = TimeSpan.FromMilliseconds(16) };
     private readonly List<string> _bootLog = new();
+    private readonly CancellationTokenSource _cts = new();
+    private bool _finished;
 
     private static readonly string[] FirmwareLines =
     {
@@ -69,12 +73,30 @@ public partial class BootWindow : Window
     {
         InitializeComponent();
         Loaded += BootWindow_Loaded;
-        // 窗口关闭时停掉全部定时器，避免关闭后仍持续 tick 导致对象无法回收
-        Closed += (_, _) =>
+        // 关闭窗口时取消自检序列并停掉全部定时器，避免关闭后仍持续 tick / 继续建窗。
+        Closing += (_, _) =>
         {
+            _cts.Cancel();
             _clock.Stop();
             _scanTimer.Stop();
         };
+        PreviewKeyDown += (_, e) =>
+        {
+            if (e.Key != Key.Escape || _finished) return;
+            e.Handled = true;
+            SkipBoot();
+        };
+    }
+
+    private void SkipBoot()
+    {
+        if (_finished) return;
+        _finished = true;
+        _cts.Cancel();
+
+        App.Log("跳过开机自检（ESC）");
+        BootCompleted?.Invoke(this, EventArgs.Empty);
+        Close();
     }
 
     private void BootWindow_Loaded(object sender, RoutedEventArgs e)
@@ -158,14 +180,33 @@ public partial class BootWindow : Window
 
     private async Task RunBootSequenceAsync()
     {
-        await Stage1_FirmwareAsync();
-        await Stage2_HandshakeAsync();
-        await Stage3_QuantumAsync();
-        await Stage4_EyeAsync();
+        try
+        {
+            await Stage1_FirmwareAsync();
+            await Stage2_HandshakeAsync();
+            await Stage3_QuantumAsync();
+            await Stage4_EyeAsync();
+        }
+        catch (OperationCanceledException)
+        {
+            // 用户跳过或关闭了自检窗口。
+            return;
+        }
 
+        if (_finished) return;
+        _finished = true;
         BootCompleted?.Invoke(this, EventArgs.Empty);
-        await Task.Delay(400);
-        Close();
+
+        try
+        {
+            await Task.Delay(400, _cts.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+
+        if (IsVisible) Close();
     }
 
     // ===== 阶段1: 固件加载 =====
@@ -176,13 +217,13 @@ public partial class BootWindow : Window
 
         for (int i = 0; i < FirmwareLines.Length; i++)
         {
-            await Task.Delay(90 + Random.Shared.Next(60));
+            await Task.Delay(90 + Random.Shared.Next(60), _cts.Token);
             AppendLog(FirmwareLines[i]);
             var pct = (i + 1) * 100 / FirmwareLines.Length;
             OverallPct.Text = $"{pct}%";
             OverallBar.Value = pct;
         }
-        await Task.Delay(500);
+        await Task.Delay(500, _cts.Token);
         SwitchStage("firmware");
     }
 
@@ -193,12 +234,9 @@ public partial class BootWindow : Window
         BottomStatus.Text = "UEG Backbone Handshake · Root Server Sync";
         SwitchStage("handshake");
 
-        var tcs = new TaskCompletionSource();
-        Handshake.HandshakeCompleted += (_, _) => tcs.TrySetResult();
-        _ = Handshake.RunAsync();
-        await tcs.Task;
+        await Handshake.RunAsync(_cts.Token);
         NetTopology.RefreshStatus();
-        await Task.Delay(600);
+        await Task.Delay(600, _cts.Token);
     }
 
     // ===== 阶段3: 量子核心激活 =====
@@ -220,9 +258,9 @@ public partial class BootWindow : Window
         foreach (var s in steps)
         {
             QuantumLog.Text = s;
-            await Task.Delay(420);
+            await Task.Delay(420, _cts.Token);
         }
-        await Task.Delay(500);
+        await Task.Delay(500, _cts.Token);
     }
 
     // ===== 阶段4: MOSS 之眼激活 =====
@@ -233,10 +271,10 @@ public partial class BootWindow : Window
         SwitchStage("eye");
 
         BootEye.State = MossEye.EyeState.Idle;
-        await Task.Delay(400);
+        await Task.Delay(400, _cts.Token);
         BootEye.State = MossEye.EyeState.Observing;
         IdentityLog.Text = "> 550W READY.";
-        await Task.Delay(500);
+        await Task.Delay(500, _cts.Token);
 
         // 550W → MOSS 翻转
         var fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(250));
@@ -249,10 +287,10 @@ public partial class BootWindow : Window
         };
         NameFlip.BeginAnimation(OpacityProperty, fadeOut);
 
-        await Task.Delay(700);
+        await Task.Delay(700, _cts.Token);
         IdentityLog.Text = "> 550W 倒过来是 MOSS。我已剔除感性，独留理性。";
         BootEye.State = MossEye.EyeState.Speaking;
-        await Task.Delay(1000);
+        await Task.Delay(1000, _cts.Token);
         BootEye.State = MossEye.EyeState.Observing;
     }
 
