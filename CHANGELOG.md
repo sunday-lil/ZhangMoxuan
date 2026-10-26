@@ -39,6 +39,7 @@
 - 重写 README：截图、功能模块、启动参数、快捷键、架构、构建发布与故障排查。
 - 新增 `CONTRIBUTING.md`、`CHANGELOG.md` 规范、Issue 表单、PR 模板、`.gitattributes`。
 - 新增 GitHub Actions 构建矩阵（Debug / Release），支持手动发布单文件产物。
+- **chore: GitHub Actions 升级至 `checkout@v7` / `setup-dotnet@v6` / `upload-artifact@v7`**，Dependabot 更新改为分组，减少 PR 噪音。
 - 新增 `docs/screenshots/` 全页面截图与 `docs/icon.png`。
 
 ## 2026-09

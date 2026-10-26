@@ -141,7 +141,7 @@ dotnet publish ZhangMoxuan/ZhangMoxuan.csproj -c Release -r win-x64 `
 
 产物为 `publish/ZhangMoxuan.exe`（约 133 MB）。
 
-CI 在每次 push / PR 时构建 Debug 与 Release；在 Actions 页面手动触发 `Build` 工作流可额外获得单文件 exe 产物。
+CI 在每次 push / PR 时构建 Debug 与 Release；手动触发 `Build` 工作流还会发布单文件 exe、上传 artifact，并运行 UI 冒烟测试（离屏渲染 7 张页面截图）。
 
 ## 项目结构
 
@@ -150,13 +150,15 @@ CI 在每次 push / PR 时构建 Debug 与 Release；在 Actions 页面手动触
 ├── .github/
 │   ├── workflows/build.yml        # Windows CI：Debug / Release 构建
 │   ├── ISSUE_TEMPLATE/            # Bug / Feature 表单
+│   ├── dependabot.yml             # GitHub Actions 月度分组升级
 │   └── pull_request_template.md
 ├── docs/
 │   ├── icon.png
 │   ├── RELEASE_NOTES_v1.2.0.md
 │   └── screenshots/               # --capture 生成，README 使用
 ├── tools/
-│   └── generate-icon.py           # Pillow 生成多尺寸 .ico
+│   ├── generate-icon.py           # Pillow 生成多尺寸 .ico
+│   └── smoke-test.ps1             # 本地 UI 冒烟测试
 ├── ZhangMoxuan/
 │   ├── Assets/moss.ico
 │   ├── App.xaml(.cs)              # 入口 / 参数 / 日志 / 截图模式

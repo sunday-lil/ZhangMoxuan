@@ -88,7 +88,7 @@ chore: 升级 Actions
 4. 面向用户的改动更新 [`CHANGELOG.md`](CHANGELOG.md)。
 5. 在 PR 描述中写清楚验证方式，勾选模板中的检查项。
 
-CI（[`build.yml`](.github/workflows/build.yml)）会在 `windows-latest` 上构建 Debug 与 Release 两个配置；PR 必须通过。
+CI（[`build.yml`](.github/workflows/build.yml)）会在 `windows-latest` 上构建 Debug 与 Release 两个配置；手动触发还会发布单文件 exe 并运行 UI 冒烟测试。PR 必须通过。
 
 ## 应用图标
 
