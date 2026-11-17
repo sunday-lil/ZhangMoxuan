@@ -3,6 +3,11 @@
 > 按时间倒序排列。格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，
 > 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## 2026-11
+
+- **chore: 环境复核与本地清理** — 在 .NET SDK 10.0.401 / Windows 11 Build 26300 上重新构建（0 warning / 0 error）并跑通 7 张页面 UI 冒烟；清理本地 `bin/`、`obj/`、`publish/` 构建产物与过期日志。
+- **docs: README 增加项目状态与最近复核信息**；CONTRIBUTING 注明脚本兼容 Windows PowerShell 5.1。
+
 ## v1.2.0 — 2026-10
 
 面向开源发布与稳定性的整备版本。

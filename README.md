@@ -21,6 +21,13 @@
 
 > 非官方粉丝作品，与《流浪地球》系列电影版权方无任何关联。影片名称、角色与设定归原作者及版权方所有。
 
+## 项目状态
+
+- 最新版本：**v1.2.0**（2026-10-24）
+- 维护状态：维护中，欢迎 Issue / PR
+- 最近复核：**2026-11-17** · .NET SDK 10.0.401 · Windows 11 Build 26300 · `dotnet build` 0 warning / 0 error · UI 冒烟 7/7
+- CI：<https://github.com/sunday-lil/ZhangMoxuan/actions/workflows/build.yml>
+
 ## 简介
 
 这是一个 Windows 原生的“桌面玩具”：打开后，你的电脑会短暂变成 550W 智能量子计算机。它会完成开机自检、与全球根服务器握手、激活 8192 量子比特核心，然后由 550W 翻转成 MOSS，进入全屏控制台。

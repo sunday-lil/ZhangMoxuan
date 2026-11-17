@@ -37,6 +37,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\smoke-test.ps1
 ```
 
 > `--capture` 会把窗口放到屏幕外（`Left = -8000`），不会抢占桌面焦点；渲染完成后自动退出。
+>
+> 仓库内的 PowerShell 脚本使用 UTF-8 BOM + CRLF，兼容 Windows PowerShell 5.1；无需安装 PowerShell 7。
 
 ## 代码结构
 
