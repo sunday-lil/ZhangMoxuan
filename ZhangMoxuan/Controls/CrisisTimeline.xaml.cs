@@ -156,7 +156,7 @@ public partial class CrisisTimeline : UserControl
         var red = (Brush)FindResource("RedBrush");
         var redBright = (Brush)FindResource("RedBrightBrush");
         var redDim = (Brush)FindResource("RedDimBrush");
-        var blue = (Brush)FindResource("BlueBrush");
+        var blue = (Brush)FindResource("AmberBrush");
         var gray = (Brush)FindResource("TextBrush");
         var white = (Brush)FindResource("TextWhiteBrush");
         var mono = (FontFamily)FindResource("MonoFont");
@@ -275,8 +275,8 @@ public partial class CrisisTimeline : UserControl
                 FontSize = 10,
                 Foreground = gray
             };
-            Canvas.SetLeft(nv.DateLabel, x - 18);
-            Canvas.SetTop(nv.DateLabel, timelineY - 52);
+            Canvas.SetLeft(nv.DateLabel, i == 3 ? x + 4 : x - 18);
+            Canvas.SetTop(nv.DateLabel, i == 3 ? timelineY - 36 : timelineY - 52);
             TimelineCanvas.Children.Add(nv.DateLabel);
 
             nv.NameLabel = new TextBlock

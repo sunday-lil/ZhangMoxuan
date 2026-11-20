@@ -7,27 +7,26 @@ using System.Windows.Threading;
 namespace ZhangMoxuan.Controls;
 
 /// <summary>
-/// 量子比特可视化：影片中"屏幕上流动的量子位状态可视化"。
-/// 显示 8192 量子比特的网格，状态在 |0⟩、|1⟩、叠加态之间流动，并展示量子纠缠连接线。
+/// 量子核心矩阵：正交排列的 8192 量子比特单元、行/列扫描线与状态热区。
+/// 不使用斜向连线或点阵装饰，符合影片 UI 的“避免斜线边框”规范。
 /// </summary>
 public partial class QuantumGrid : UserControl
 {
-    private class Qubit
+    private sealed class Cell
     {
-        public int X { get; init; }
-        public int Y { get; init; }
-        public Ellipse Dot { get; init; } = null!;
-        public int State { get; set; }
+        public Rectangle Rect = null!;
+        public int State;
     }
 
-    private readonly List<Qubit> _qubits = new();
-    private readonly List<Line> _links = new();
-    private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromMilliseconds(120) };
-    private Brush _redDim = null!;
-    private Brush _red = null!;
-    private Brush _redBright = null!;
-    private int _cols = 48;
+    private readonly List<Cell> _cells = new();
+    private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromMilliseconds(100) };
+    private readonly Random _rng = new(8192);
+    private int _cols = 96;
     private int _rows = 24;
+    private double _cell = 6;
+    private double _startX;
+    private double _startY;
+    private int _scanRow;
 
     public QuantumGrid()
     {
@@ -42,109 +41,124 @@ public partial class QuantumGrid : UserControl
         Layer0.Children.Clear();
         Layer1.Children.Clear();
         Layer2.Children.Clear();
-        _qubits.Clear();
-        _links.Clear();
+        _cells.Clear();
 
         var w = ActualWidth;
         var h = ActualHeight;
         if (w <= 0 || h <= 0) return;
 
-        var margin = 8;
-        var availW = w - margin * 2;
-        var availH = h - margin * 2;
-        var cell = Math.Min(availW / _cols, availH / _rows);
-        var startX = (w - cell * _cols) / 2 + cell / 2;
-        var startY = (h - cell * _rows) / 2 + cell / 2;
+        var marginX = 10.0;
+        var marginY = 8.0;
+        var availW = w - marginX * 2;
+        var availH = h - marginY * 2;
+        _cell = Math.Min(availW / _cols, availH / _rows);
+        _startX = (w - _cell * _cols) / 2;
+        _startY = (h - _cell * _rows) / 2;
 
-        _redDim = (Brush)FindResource("RedDimBrush");
-        _red = (Brush)FindResource("RedBrush");
-        _redBright = (Brush)FindResource("RedBrightBrush");
+        var dim = (Brush)FindResource("RedDimBrush");
+        var red = (Brush)FindResource("RedBrush");
+        var bright = (Brush)FindResource("RedBrightBrush");
+        var amber = (Brush)FindResource("AmberBrush");
+        var grid = (Brush)FindResource("GridBrush");
 
-        // 量子比特点阵
+        // 正交分区线
+        for (int x = 0; x <= _cols; x += 12)
+        {
+            var line = new Line
+            {
+                X1 = _startX + x * _cell, Y1 = _startY,
+                X2 = _startX + x * _cell, Y2 = _startY + _rows * _cell,
+                Stroke = grid, StrokeThickness = 0.5, Opacity = 0.55
+            };
+            Layer1.Children.Add(line);
+        }
+        for (int y = 0; y <= _rows; y += 8)
+        {
+            var line = new Line
+            {
+                X1 = _startX, Y1 = _startY + y * _cell,
+                X2 = _startX + _cols * _cell, Y2 = _startY + y * _cell,
+                Stroke = grid, StrokeThickness = 0.5, Opacity = 0.55
+            };
+            Layer1.Children.Add(line);
+        }
+
+        var pad = Math.Max(1, _cell * 0.18);
         for (int y = 0; y < _rows; y++)
         for (int x = 0; x < _cols; x++)
         {
-            var dot = new Ellipse
+            var rect = new Rectangle
             {
-                Width = 2.6, Height = 2.6,
-                Fill = _redDim,
-                Opacity = 0.4
+                Width = Math.Max(1.4, _cell - pad),
+                Height = Math.Max(1.4, _cell - pad),
+                Fill = dim,
+                Opacity = 0.45
             };
-            Canvas.SetLeft(dot, startX + x * cell - 1.3);
-            Canvas.SetTop(dot, startY + y * cell - 1.3);
-            Layer0.Children.Add(dot);
-            _qubits.Add(new Qubit { X = x, Y = y, Dot = dot, State = 0 });
+            Canvas.SetLeft(rect, _startX + x * _cell + pad / 2);
+            Canvas.SetTop(rect, _startY + y * _cell + pad / 2);
+            Layer0.Children.Add(rect);
+            _cells.Add(new Cell { Rect = rect, State = 0 });
         }
 
-        // 预生成纠缠连接线：大部分连接邻近比特，形成可信的纠缠晶格；少量长程连接。
-        var rng = new Random(42);
-        for (int i = 0; i < 54; i++)
+        // 列标题
+        for (int x = 0; x < _cols; x += 12)
         {
-            var a = _qubits[rng.Next(_qubits.Count)];
-            Qubit b;
-            if (i % 6 == 0)
+            var label = new TextBlock
             {
-                b = _qubits[rng.Next(_qubits.Count)];
-            }
-            else
-            {
-                var bx = Math.Clamp(a.X + rng.Next(-4, 5), 0, _cols - 1);
-                var by = Math.Clamp(a.Y + rng.Next(-4, 5), 0, _rows - 1);
-                b = _qubits[by * _cols + bx];
-            }
-            if (a == b) continue;
-            var line = new Line
-            {
-                X1 = startX + a.X * cell,
-                Y1 = startY + a.Y * cell,
-                X2 = startX + b.X * cell,
-                Y2 = startY + b.Y * cell,
-                Stroke = _red,
-                StrokeThickness = 0.5,
-                Opacity = 0
+                Text = $"{x / 12 + 1:00}",
+                FontFamily = (FontFamily)FindResource("CondensedFont"),
+                FontSize = 7,
+                Foreground = (Brush)FindResource("TextTertiaryBrush")
             };
-            Layer1.Children.Add(line);
-            _links.Add(line);
+            Canvas.SetLeft(label, _startX + x * _cell + 1);
+            Canvas.SetTop(label, _startY - 8);
+            Layer2.Children.Add(label);
         }
 
+        // 扫描行
+        _scanRow = 0;
         _timer.Start();
     }
 
     private void Tick(object? sender, EventArgs e)
     {
-        if (_qubits.Count == 0) return;
-
-        // 流动：随机一些比特改变状态，形成"波"
-        var rng = Random.Shared;
-
-        for (int i = 0; i < 30; i++)
+        if (_cells.Count == 0) return;
+        var dim = (Brush)FindResource("RedDimBrush");
+        var red = (Brush)FindResource("RedBrush");
+        var bright = (Brush)FindResource("RedBrightBrush");
+        var amber = (Brush)FindResource("AmberBrush");
+        // 少量比特随机翻转
+        for (int i = 0; i < 42; i++)
         {
-            var q = _qubits[rng.Next(_qubits.Count)];
-            q.State = (q.State + 1) % 3;
-            switch (q.State)
+            var cell = _cells[_rng.Next(_cells.Count)];
+            cell.State = (cell.State + 1) % 4;
+            cell.Rect.Fill = cell.State switch
             {
-                case 0:
-                    q.Dot.Fill = _redDim;
-                    q.Dot.Opacity = 0.3 + rng.NextDouble() * 0.2;
-                    break;
-                case 1:
-                    q.Dot.Fill = _red;
-                    q.Dot.Opacity = 0.5 + rng.NextDouble() * 0.3;
-                    break;
-                case 2:
-                    q.Dot.Fill = _redBright;
-                    q.Dot.Opacity = 0.8 + rng.NextDouble() * 0.2;
-                    break;
-            }
+                0 => dim,
+                1 => red,
+                2 => bright,
+                _ => amber
+            };
+            cell.Rect.Opacity = cell.State == 0 ? 0.35 + _rng.NextDouble() * 0.2 : 0.65 + _rng.NextDouble() * 0.35;
         }
 
-        // 连接线随机闪烁
-        for (int i = 0; i < _links.Count; i++)
+        // 正交扫描线：每帧下移一行
+        if (_scanLine != null) Layer1.Children.Remove(_scanLine);
+        _scanRow = (_scanRow + 1) % _rows;
+        _scanLine = new Line
         {
-            if (rng.NextDouble() < 0.1)
-                _links[i].Opacity = rng.NextDouble() * 0.5;
-        }
+            X1 = _startX,
+            Y1 = _startY + _scanRow * _cell,
+            X2 = _startX + _cols * _cell,
+            Y2 = _startY + _scanRow * _cell,
+            Stroke = bright,
+            StrokeThickness = 1,
+            Opacity = 0.65
+        };
+        Layer1.Children.Add(_scanLine);
     }
+
+    private Line? _scanLine;
 
     protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
     {

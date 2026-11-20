@@ -4,41 +4,48 @@
              ShutdownMode="OnLastWindowClose">
     <Application.Resources>
         <ResourceDictionary>
-            <!-- ===== MOSS 主题：深邃蓝黑 + 克制赤红 =====
-                 去廉价霓虹感：背景加入轻微蓝调增加层次，红色降饱和并分级使用 -->
+            <!-- ===== 550W / MOSS 控制台主题 =====
+                 依据《流浪地球2》制作手记的 UI 规范：
+                 中文字体 思源黑体；英文字体 Rajdhani；整体深灰色系；
+                 红 / 中黄 / 亮白作为跳色；边框避免斜线构成。 -->
 
-            <!-- 背景层级 -->
-            <Color x:Key="BgBlack">#0A0E14</Color>      <!-- 主背景：深蓝黑，非纯黑 -->
-            <Color x:Key="BgPanel">#11161F</Color>       <!-- 面板：略亮，与背景拉开层次 -->
-            <Color x:Key="BgElevated">#161C27</Color>    <!-- 更上层（悬浮/选中） -->
-            <Color x:Key="GridLine">#1E2530</Color>      <!-- 网格线：低对比，不抢眼 -->
+            <Color x:Key="BgBlack">#121212</Color>
+            <Color x:Key="BgPanel">#1A1A1A</Color>
+            <Color x:Key="BgElevated">#232323</Color>
+            <Color x:Key="BgHeader">#2A2A2A</Color>
+            <Color x:Key="GridLine">#3A3A3A</Color>
+            <Color x:Key="GridLineBright">#5A5A5A</Color>
 
-            <!-- 红色系（MOSS 标识色，分级使用） -->
-            <Color x:Key="MossRed">#D8434C</Color>       <!-- 主红：降饱和，更高级 -->
-            <Color x:Key="MossRedBright">#F2555E</Color> <!-- 亮红：仅用于关键高亮 -->
-            <Color x:Key="MossRedDim">#6B2B33</Color>    <!-- 暗红：背景/底纹 -->
-            <Color x:Key="MossRedMute">#8A3A42</Color>   <!-- 次要红：副标签 -->
+            <Color x:Key="MossRed">#C93A3A</Color>
+            <Color x:Key="MossRedBright">#F04A4A</Color>
+            <Color x:Key="MossRedDim">#5A2323</Color>
+            <Color x:Key="MossRedMute">#8A3A3A</Color>
 
-            <!-- 辅助色 -->
-            <Color x:Key="HumanBlue">#3A7BFF</Color>     <!-- 人类蓝：少量对比 -->
-            <Color x:Key="WarnAmber">#E8A53A</Color>     <!-- 警示琥珀 -->
+            <Color x:Key="WarnAmber">#D6A23A</Color>
+            <Color x:Key="AmberBright">#F0C05A</Color>
+            <Color x:Key="AmberDim">#6B5124</Color>
+            <Color x:Key="SignalGreen">#7FA650</Color>
+            <Color x:Key="Steel">#8A8A8A</Color>
 
-            <!-- 文字层级 -->
-            <Color x:Key="TextPrimary">#DDE2EA</Color>   <!-- 主要文字 -->
-            <Color x:Key="TextSecondary">#8A929E</Color> <!-- 次要文字 -->
-            <Color x:Key="TextTertiary">#5A6370</Color>  <!-- 三级文字/占位 -->
+            <Color x:Key="TextPrimary">#F2F2F2</Color>
+            <Color x:Key="TextSecondary">#BDBDBD</Color>
+            <Color x:Key="TextTertiary">#808080</Color>
 
-            <!-- 笔刷 -->
             <SolidColorBrush x:Key="BgBrush" Color="{StaticResource BgBlack}"/>
             <SolidColorBrush x:Key="PanelBrush" Color="{StaticResource BgPanel}"/>
             <SolidColorBrush x:Key="ElevatedBrush" Color="{StaticResource BgElevated}"/>
+            <SolidColorBrush x:Key="HeaderBrush" Color="{StaticResource BgHeader}"/>
             <SolidColorBrush x:Key="GridBrush" Color="{StaticResource GridLine}"/>
+            <SolidColorBrush x:Key="GridBrightBrush" Color="{StaticResource GridLineBright}"/>
             <SolidColorBrush x:Key="RedBrush" Color="{StaticResource MossRed}"/>
             <SolidColorBrush x:Key="RedBrightBrush" Color="{StaticResource MossRedBright}"/>
             <SolidColorBrush x:Key="RedDimBrush" Color="{StaticResource MossRedDim}"/>
             <SolidColorBrush x:Key="RedMuteBrush" Color="{StaticResource MossRedMute}"/>
-            <SolidColorBrush x:Key="BlueBrush" Color="{StaticResource HumanBlue}"/>
             <SolidColorBrush x:Key="AmberBrush" Color="{StaticResource WarnAmber}"/>
+            <SolidColorBrush x:Key="AmberBrightBrush" Color="{StaticResource AmberBright}"/>
+            <SolidColorBrush x:Key="AmberDimBrush" Color="{StaticResource AmberDim}"/>
+            <SolidColorBrush x:Key="GreenBrush" Color="{StaticResource SignalGreen}"/>
+            <SolidColorBrush x:Key="SteelBrush" Color="{StaticResource Steel}"/>
             <SolidColorBrush x:Key="TextBrush" Color="{StaticResource TextSecondary}"/>
             <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource TextSecondary}"/>
             <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource TextPrimary}"/>
@@ -46,12 +53,12 @@
             <!-- 兼容旧引用 -->
             <SolidColorBrush x:Key="TextWhiteBrush" Color="{StaticResource TextPrimary}"/>
 
-            <!-- 字体：UI 用现代无衬线，数据/代码用等宽 -->
-            <FontFamily x:Key="SansFont">Segoe UI Variable Text, Segoe UI, Microsoft YaHei UI</FontFamily>
+            <!-- 字体：中文用系统可用的思源黑体替代（微软雅黑），英文/数字用 Rajdhani -->
+            <FontFamily x:Key="SansFont">Microsoft YaHei UI, Segoe UI</FontFamily>
+            <FontFamily x:Key="CondensedFont">pack://application:,,,/Assets/Fonts/#Rajdhani</FontFamily>
+            <FontFamily x:Key="DisplayFont">pack://application:,,,/Assets/Fonts/#Rajdhani</FontFamily>
             <FontFamily x:Key="MonoFont">Cascadia Mono, Consolas, Courier New</FontFamily>
-            <FontFamily x:Key="DisplayFont">Segoe UI Variable Display, Segoe UI, Microsoft YaHei UI</FontFamily>
 
-            <!-- 全局控件样式 -->
             <Style x:Key="MossText" TargetType="TextBlock">
                 <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
                 <Setter Property="FontFamily" Value="{StaticResource SansFont}"/>
@@ -62,7 +69,22 @@
 
             <Style x:Key="HudLabel" TargetType="TextBlock">
                 <Setter Property="Foreground" Value="{StaticResource TextTertiaryBrush}"/>
-                <Setter Property="FontFamily" Value="{StaticResource SansFont}"/>
+                <Setter Property="FontFamily" Value="{StaticResource CondensedFont}"/>
+                <Setter Property="FontSize" Value="10"/>
+                <Setter Property="FontWeight" Value="SemiBold"/>
+                <Setter Property="Typography.Capitals" Value="AllSmallCaps"/>
+            </Style>
+
+            <Style x:Key="HudValue" TargetType="TextBlock">
+                <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+                <Setter Property="FontFamily" Value="{StaticResource CondensedFont}"/>
+                <Setter Property="FontSize" Value="18"/>
+                <Setter Property="FontWeight" Value="Medium"/>
+            </Style>
+
+            <Style x:Key="PanelCode" TargetType="TextBlock">
+                <Setter Property="Foreground" Value="{StaticResource AmberBrush}"/>
+                <Setter Property="FontFamily" Value="{StaticResource CondensedFont}"/>
                 <Setter Property="FontSize" Value="10"/>
                 <Setter Property="FontWeight" Value="SemiBold"/>
                 <Setter Property="Typography.Capitals" Value="AllSmallCaps"/>

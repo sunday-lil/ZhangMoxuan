@@ -4,29 +4,18 @@
              Background="Transparent">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- 顶部标签 -->
-        <TextBlock Grid.Row="0"
-                   Text="Threat Forecast · MOSS Prediction"
-                   FontFamily="{StaticResource SansFont}"
-                   FontSize="11"
-                   FontWeight="SemiBold"
-                   Foreground="{StaticResource TextTertiaryBrush}"
-                   Typography.Capitals="AllSmallCaps"
-                   Margin="4,0,0,8"/>
-
         <!-- 时间线画布 -->
-        <Canvas Grid.Row="1"
+        <Canvas Grid.Row="0"
                 x:Name="TimelineCanvas"
                 ClipToBounds="True"/>
 
         <!-- 详情区 -->
-        <Border Grid.Row="2"
+        <Border Grid.Row="1"
                 Background="{StaticResource PanelBrush}"
                 BorderBrush="{StaticResource GridBrush}"
                 BorderThickness="1"
@@ -97,7 +86,7 @@
         </Border>
 
         <!-- MOSS 语录滚动 -->
-        <Border Grid.Row="3"
+        <Border Grid.Row="2"
                 BorderBrush="{StaticResource GridBrush}"
                 BorderThickness="0,1,0,0"
                 Margin="0,6,0,0"

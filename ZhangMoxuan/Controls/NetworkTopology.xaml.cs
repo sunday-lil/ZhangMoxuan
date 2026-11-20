@@ -7,406 +7,291 @@ using System.Windows.Threading;
 namespace ZhangMoxuan.Controls;
 
 /// <summary>
-/// 全球网络拓扑可视化控件：UEG 主干网络全球分布。
-/// 绘制点阵世界地图、3 个根服务器（红色脉冲）、10+ UEG 计算节点、
-/// 拓扑连接线与流动数据包动画，并提供右下角节点/带宽/延迟统计。
+/// UEG 雷达监控：距离环、方位刻度、扫描扇区与目标接触点。
+/// 对应影片作战室屏幕的雷达监控界面，不使用世界地图点阵或斜向装饰线。
 /// </summary>
 public partial class NetworkTopology : UserControl
 {
-    private record Node(string Name, double Nx, double Ny, bool IsRoot);
-    private record Link(int From, int To);
+    private sealed record Contact(string Id, double Bearing, double Range, string Type, string Status);
 
-    private class Packet
+    private static readonly Contact[] Contacts =
     {
-        public int LinkIndex;
-        public double Progress;
-        public double Speed;
-        public Ellipse Dot = null!;
-    }
-
-    private readonly List<Node> _nodes = new();
-    private readonly List<Link> _links = new();
-    private readonly List<Packet> _packets = new();
-    private readonly List<Line> _linkLines = new();
-    private readonly List<Ellipse> _nodeDots = new();
-    private readonly List<Ellipse> _rootRings = new();
-    private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromMilliseconds(50) };
-    private readonly DispatcherTimer _statTimer = new() { Interval = TimeSpan.FromSeconds(1) };
-    private readonly Random _rng = new(1337);
-    private int _tick;
-
-    // 简化大陆轮廓（归一化坐标），用于点阵世界地图背景
-    private static readonly (double x, double y, double w, double h)[] Continents =
-    {
-        // 北美
-        (0.10, 0.12, 0.06, 0.08),
-        (0.16, 0.14, 0.12, 0.10),
-        (0.22, 0.22, 0.10, 0.10),
-        (0.18, 0.30, 0.05, 0.06),
-        // 南美
-        (0.25, 0.42, 0.06, 0.08),
-        (0.27, 0.48, 0.05, 0.10),
-        (0.28, 0.56, 0.03, 0.10),
-        // 欧洲
-        (0.46, 0.12, 0.05, 0.06),
-        (0.48, 0.18, 0.07, 0.07),
-        // 非洲
-        (0.48, 0.28, 0.09, 0.08),
-        (0.50, 0.34, 0.07, 0.10),
-        (0.51, 0.44, 0.05, 0.07),
-        // 亚洲
-        (0.55, 0.10, 0.12, 0.08),
-        (0.60, 0.18, 0.10, 0.08),
-        (0.70, 0.20, 0.13, 0.12),
-        (0.87, 0.27, 0.04, 0.06),
-        (0.66, 0.32, 0.05, 0.07),
-        (0.72, 0.36, 0.06, 0.06),
-        // 澳洲
-        (0.80, 0.52, 0.08, 0.06),
+        new("BEIJING-ROOT", 12, 0.58, "ROOT", "OK"),
+        new("TOKYO-ROOT", 38, 0.72, "ROOT", "OK"),
+        new("WASHINGTON-ROOT", 312, 0.81, "ROOT", "OK"),
+        new("LONDON", 296, 0.36, "UEG", "OK"),
+        new("PARIS", 301, 0.39, "UEG", "OK"),
+        new("MOSCOW", 328, 0.25, "UEG", "OK"),
+        new("DUBAI", 88, 0.44, "UEG", "OK"),
+        new("MUMBAI", 102, 0.39, "UEG", "OK"),
+        new("SINGAPORE", 132, 0.63, "UEG", "OK"),
+        new("SYDNEY", 158, 0.78, "UEG", "WARN"),
+        new("SAO-PAULO", 224, 0.71, "UEG", "OK"),
+        new("CAIRO", 76, 0.30, "UEG", "OK"),
+        new("JOHANNESBURG", 196, 0.53, "UEG", "OK"),
+        new("NEW-YORK", 306, 0.66, "UEG", "OK"),
+        new("LOS-ANGELES", 282, 0.83, "UEG", "OK"),
+        new("BERLIN", 304, 0.33, "UEG", "OK"),
+        new("SEOUL", 34, 0.61, "UEG", "OK"),
+        new("UNKNOWN-01", 118, 0.88, "UNKNOWN", "TRACK"),
+        new("UNKNOWN-02", 252, 0.91, "UNKNOWN", "TRACK"),
     };
+
+    private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromMilliseconds(40) };
+    private readonly DispatcherTimer _statTimer = new() { Interval = TimeSpan.FromSeconds(1) };
+    private readonly Random _rng = new(2075);
+    private RotateTransform _sweepRotate = null!;
+    private double _sweepAngle;
+    private int _tick;
 
     public NetworkTopology()
     {
         InitializeComponent();
-        Loaded += OnLoaded;
-        Unloaded += OnUnloaded;
-        _timer.Tick += OnTick;
-        _statTimer.Tick += OnStatTick;
-        InitNodes();
-        BuildLinks();
-        MapCanvas.SizeChanged += (_, _) => { if (IsLoaded) Build(); };
-    }
-
-    private void InitNodes()
-    {
-        // 3 个根服务器（红色脉冲）
-        _nodes.Add(new Node("BEIJING-ROOT", 0.823, 0.278, true));
-        _nodes.Add(new Node("TOKYO-ROOT", 0.888, 0.302, true));
-        _nodes.Add(new Node("WASHINGTON-ROOT", 0.286, 0.284, true));
-        // 14 个 UEG 计算节点
-        _nodes.Add(new Node("LONDON", 0.500, 0.214, false));
-        _nodes.Add(new Node("PARIS", 0.507, 0.228, false));
-        _nodes.Add(new Node("MOSCOW", 0.604, 0.190, false));
-        _nodes.Add(new Node("DUBAI", 0.654, 0.360, false));
-        _nodes.Add(new Node("MUMBAI", 0.703, 0.394, false));
-        _nodes.Add(new Node("SINGAPORE", 0.788, 0.493, false));
-        _nodes.Add(new Node("SYDNEY", 0.920, 0.688, false));
-        _nodes.Add(new Node("SAO-PAULO", 0.371, 0.631, false));
-        _nodes.Add(new Node("CAIRO", 0.587, 0.333, false));
-        _nodes.Add(new Node("JOHANNESBURG", 0.578, 0.646, false));
-        _nodes.Add(new Node("NEW-YORK", 0.294, 0.274, false));
-        _nodes.Add(new Node("LOS-ANGELES", 0.172, 0.311, false));
-        _nodes.Add(new Node("BERLIN", 0.537, 0.208, false));
-        _nodes.Add(new Node("SEOUL", 0.853, 0.291, false));
-    }
-
-    private void BuildLinks()
-    {
-        _links.Clear();
-        // 根服务器互联（三角主干）
-        _links.Add(new Link(0, 1)); // 北京—东京
-        _links.Add(new Link(1, 2)); // 东京—华盛顿
-        _links.Add(new Link(2, 0)); // 华盛顿—北京
-        // 各 UEG 节点连接到最近的根服务器
-        for (int i = 3; i < _nodes.Count; i++)
-            _links.Add(new Link(i, NearestRoot(i)));
-        // 额外区域主干链路，构成更密集的拓扑
-        _links.Add(new Link(3, 4));   // London—Paris
-        _links.Add(new Link(3, 15));  // London—Berlin
-        _links.Add(new Link(5, 11));  // Moscow—Cairo
-        _links.Add(new Link(7, 8));   // Mumbai—Singapore
-        _links.Add(new Link(8, 9));   // Singapore—Sydney
-        _links.Add(new Link(16, 1));  // Seoul—Tokyo
-        _links.Add(new Link(14, 13)); // LA—NewYork
-        _links.Add(new Link(10, 13)); // SaoPaulo—NewYork
-    }
-
-    private int NearestRoot(int i)
-    {
-        var n = _nodes[i];
-        double best = double.MaxValue;
-        int bestIdx = 0;
-        for (int r = 0; r < 3; r++)
+        Loaded += (_, _) =>
         {
-            var root = _nodes[r];
-            var d = (n.Nx - root.Nx) * (n.Nx - root.Nx) + (n.Ny - root.Ny) * (n.Ny - root.Ny);
-            if (d < best) { best = d; bestIdx = r; }
-        }
-        return bestIdx;
-    }
-
-    private void OnLoaded(object sender, RoutedEventArgs e)
-    {
-        Build();
-        _timer.Start();
-        _statTimer.Start();
-        OnStatTick(null, EventArgs.Empty);
-    }
-
-    private void OnUnloaded(object sender, RoutedEventArgs e)
-    {
-        _timer.Stop();
-        _statTimer.Stop();
+            Build();
+            _timer.Start();
+            _statTimer.Start();
+            UpdateStats();
+        };
+        Unloaded += (_, _) =>
+        {
+            _timer.Stop();
+            _statTimer.Stop();
+        };
+        _timer.Tick += (_, _) => Tick();
+        _statTimer.Tick += (_, _) => UpdateStats();
+        RadarCanvas.SizeChanged += (_, _) => { if (IsLoaded) Build(); };
     }
 
     private void Build()
     {
-        MapCanvas.Children.Clear();
-        _linkLines.Clear();
-        _nodeDots.Clear();
-        _rootRings.Clear();
-        _packets.Clear();
-
-        var w = MapCanvas.ActualWidth;
-        var h = MapCanvas.ActualHeight;
+        RadarCanvas.Children.Clear();
+        var w = RadarCanvas.ActualWidth;
+        var h = RadarCanvas.ActualHeight;
         if (w <= 0 || h <= 0) return;
 
-        var redDim = (Brush)FindResource("RedDimBrush");
+        var cx = w / 2;
+        var cy = h / 2;
+        var radius = Math.Min(w, h) * 0.42;
+        var grid = (Brush)FindResource("GridBrush");
+        var bright = (Brush)FindResource("GridBrightBrush");
+        var dim = (Brush)FindResource("TextTertiaryBrush");
         var red = (Brush)FindResource("RedBrush");
-        var redBright = (Brush)FindResource("RedBrightBrush");
-        var gridBrush = (Brush)FindResource("GridBrush");
-        var textBrush = (Brush)FindResource("TextBrush");
-        var mono = (FontFamily)FindResource("MonoFont");
+        var amber = (Brush)FindResource("AmberBrush");
+        var green = (Brush)FindResource("GreenBrush");
+        var white = (Brush)FindResource("TextPrimaryBrush");
+        var mono = (FontFamily)FindResource("CondensedFont");
 
-        // 背景网格线
-        double gridStep = 40;
-        for (double x = 0; x < w; x += gridStep)
+        // 背景细网格（正交）
+        for (double x = cx % 40; x < w; x += 40)
+            RadarCanvas.Children.Add(new Line { X1 = x, Y1 = 0, X2 = x, Y2 = h, Stroke = grid, StrokeThickness = 0.4, Opacity = 0.35 });
+        for (double y = cy % 40; y < h; y += 40)
+            RadarCanvas.Children.Add(new Line { X1 = 0, Y1 = y, X2 = w, Y2 = y, Stroke = grid, StrokeThickness = 0.4, Opacity = 0.35 });
+
+        // 距离环
+        for (int i = 1; i <= 4; i++)
         {
-            MapCanvas.Children.Add(new Line
+            var r = radius * i / 4;
+            RadarCanvas.Children.Add(new Ellipse
             {
-                X1 = x, Y1 = 0, X2 = x, Y2 = h,
-                Stroke = gridBrush, StrokeThickness = 0.5, Opacity = 0.5
+                Width = r * 2, Height = r * 2,
+                Stroke = i == 4 ? bright : grid,
+                StrokeThickness = i == 4 ? 1.1 : 0.7,
+                Opacity = i == 4 ? 0.85 : 0.5
             });
+            Canvas.SetLeft(RadarCanvas.Children[^1] as UIElement, cx - r);
+            Canvas.SetTop(RadarCanvas.Children[^1] as UIElement, cy - r);
+            var lbl = new TextBlock { Text = $"{i * 20:00} KM", FontFamily = mono, FontSize = 7, Foreground = dim };
+            Canvas.SetLeft(lbl, cx + 4);
+            Canvas.SetTop(lbl, cy - r + 2);
+            RadarCanvas.Children.Add(lbl);
         }
-        for (double y = 0; y < h; y += gridStep)
+
+        // 十字准线
+        RadarCanvas.Children.Add(new Line { X1 = cx, Y1 = cy - radius, X2 = cx, Y2 = cy + radius, Stroke = grid, StrokeThickness = 0.8, Opacity = 0.7 });
+        RadarCanvas.Children.Add(new Line { X1 = cx - radius, Y1 = cy, X2 = cx + radius, Y2 = cy, Stroke = grid, StrokeThickness = 0.8, Opacity = 0.7 });
+
+        // 方位刻度
+        for (int deg = 0; deg < 360; deg += 10)
         {
-            MapCanvas.Children.Add(new Line
+            var rad = (deg - 90) * Math.PI / 180;
+            var major = deg % 30 == 0;
+            var r1 = radius - (major ? 9 : 4);
+            var r2 = radius;
+            RadarCanvas.Children.Add(new Line
             {
-                X1 = 0, Y1 = y, X2 = w, Y2 = y,
-                Stroke = gridBrush, StrokeThickness = 0.5, Opacity = 0.5
+                X1 = cx + r1 * Math.Cos(rad), Y1 = cy + r1 * Math.Sin(rad),
+                X2 = cx + r2 * Math.Cos(rad), Y2 = cy + r2 * Math.Sin(rad),
+                Stroke = major ? bright : grid,
+                StrokeThickness = major ? 1 : 0.5,
+                Opacity = major ? 0.9 : 0.55
             });
-        }
-
-        // 大陆点阵（仅陆地绘制点，构成简化世界地图轮廓）
-        double dotStep = 10;
-        for (double gy = dotStep / 2; gy < h; gy += dotStep)
-        {
-            for (double gx = dotStep / 2; gx < w; gx += dotStep)
+            if (major)
             {
-                var nx = gx / w;
-                var ny = gy / h;
-                bool onLand = false;
-                foreach (var c in Continents)
-                {
-                    if (nx >= c.x && nx <= c.x + c.w && ny >= c.y && ny <= c.y + c.h)
-                    {
-                        onLand = true;
-                        break;
-                    }
-                }
-                if (!onLand) continue;
-                var dot = new Ellipse
-                {
-                    Width = 1.6, Height = 1.6,
-                    Fill = redDim, Opacity = 0.5
-                };
-                Canvas.SetLeft(dot, gx - 0.8);
-                Canvas.SetTop(dot, gy - 0.8);
-                MapCanvas.Children.Add(dot);
-            }
-        }
-
-        // 拓扑连接线
-        foreach (var link in _links)
-        {
-            var a = _nodes[link.From];
-            var b = _nodes[link.To];
-            var line = new Line
-            {
-                X1 = a.Nx * w, Y1 = a.Ny * h,
-                X2 = b.Nx * w, Y2 = b.Ny * h,
-                Stroke = red, StrokeThickness = 0.7, Opacity = 0.3
-            };
-            MapCanvas.Children.Add(line);
-            _linkLines.Add(line);
-        }
-
-        // 节点
-        for (int i = 0; i < _nodes.Count; i++)
-        {
-            var n = _nodes[i];
-            var px = n.Nx * w;
-            var py = n.Ny * h;
-
-            if (n.IsRoot)
-            {
-                // 脉冲外环（动画时扩展淡出）
-                var ring = new Ellipse
-                {
-                    Width = 12, Height = 12,
-                    Stroke = red, StrokeThickness = 1, Opacity = 0.6
-                };
-                Canvas.SetLeft(ring, px - 6);
-                Canvas.SetTop(ring, py - 6);
-                MapCanvas.Children.Add(ring);
-                _rootRings.Add(ring);
-
-                // 根节点实心点
-                var dot = new Ellipse
-                {
-                    Width = 7, Height = 7,
-                    Fill = red, Opacity = 1
-                };
-                Canvas.SetLeft(dot, px - 3.5);
-                Canvas.SetTop(dot, py - 3.5);
-                MapCanvas.Children.Add(dot);
-                _nodeDots.Add(dot);
-
-                // 根服务器标签
                 var label = new TextBlock
                 {
-                    Text = n.Name,
-                    FontFamily = mono, FontSize = 9,
-                    Foreground = red
+                    Text = $"{deg:000}",
+                    FontFamily = mono,
+                    FontSize = 7,
+                    Foreground = dim
                 };
-                // 根服务器标签：东京靠近东侧边缘，标签放到左侧，避免与北京标签重叠。
-                var labelLeft = n.Name == "TOKYO-ROOT" ? px - 58 : px + 8;
-                var labelTop = n.Name == "TOKYO-ROOT" ? py + 6 : py - 15;
-                Canvas.SetLeft(label, labelLeft);
-                Canvas.SetTop(label, labelTop);
-                MapCanvas.Children.Add(label);
-            }
-            else
-            {
-                var dot = new Ellipse
-                {
-                    Width = 4, Height = 4,
-                    Fill = redDim, Opacity = 0.85
-                };
-                Canvas.SetLeft(dot, px - 2);
-                Canvas.SetTop(dot, py - 2);
-                MapCanvas.Children.Add(dot);
-                _nodeDots.Add(dot);
-
-                // 只标注分布较开的枢纽城市，避免东亚/欧洲标签互相覆盖。
-                if (n.Name is "NEW-YORK" or "LONDON" or "MOSCOW" or "SYDNEY" or "SINGAPORE")
-                {
-                    var label = new TextBlock
-                    {
-                        Text = n.Name,
-                        FontFamily = mono, FontSize = 8,
-                        Foreground = textBrush, Opacity = 0.65
-                    };
-                    Canvas.SetLeft(label, px + 5);
-                    Canvas.SetTop(label, py + 4);
-                    MapCanvas.Children.Add(label);
-                }
+                var lr = radius + 14;
+                Canvas.SetLeft(label, cx + lr * Math.Cos(rad) - 8);
+                Canvas.SetTop(label, cy + lr * Math.Sin(rad) - 6);
+                RadarCanvas.Children.Add(label);
             }
         }
 
-        // 数据包（沿连接线流动的小红点）
-        for (int i = 0; i < _links.Count; i++)
+        // 扫描扇区
+        var sector = BuildSweepSector(cx, cy, radius);
+        sector.Fill = new SolidColorBrush(Color.FromArgb(28, 240, 74, 74));
+        _sweepRotate = new RotateTransform(_sweepAngle, cx, cy);
+        sector.RenderTransform = _sweepRotate;
+        RadarCanvas.Children.Add(sector);
+        var sweepLine = new Line
         {
-            var pkt = new Packet
+            X1 = cx, Y1 = cy, X2 = cx, Y2 = cy - radius,
+            Stroke = red, StrokeThickness = 1.2, Opacity = 0.9,
+            RenderTransform = _sweepRotate
+        };
+        RadarCanvas.Children.Add(sweepLine);
+
+        // 接触点
+        var usedLabels = new List<Rect>();
+        foreach (var c in Contacts)
+        {
+            var rad = (c.Bearing - 90) * Math.PI / 180;
+            var x = cx + radius * c.Range * Math.Cos(rad);
+            var y = cy + radius * c.Range * Math.Sin(rad);
+            var color = c.Type switch
             {
-                LinkIndex = i,
-                Progress = _rng.NextDouble(),
-                Speed = 0.008 + _rng.NextDouble() * 0.014,
-                Dot = new Ellipse
-                {
-                    Width = 3, Height = 3,
-                    Fill = redBright, Opacity = 0.95
-                }
+                "ROOT" => red,
+                "UNKNOWN" => amber,
+                _ => c.Status == "WARN" ? amber : white
             };
-            MapCanvas.Children.Add(pkt.Dot);
-            _packets.Add(pkt);
-            UpdatePacketPosition(pkt, w, h);
-        }
-    }
-
-    private void UpdatePacketPosition(Packet pkt, double w, double h)
-    {
-        var link = _links[pkt.LinkIndex];
-        var a = _nodes[link.From];
-        var b = _nodes[link.To];
-        var x = (a.Nx + (b.Nx - a.Nx) * pkt.Progress) * w;
-        var y = (a.Ny + (b.Ny - a.Ny) * pkt.Progress) * h;
-        Canvas.SetLeft(pkt.Dot, x - 1.5);
-        Canvas.SetTop(pkt.Dot, y - 1.5);
-    }
-
-    private void OnTick(object? sender, EventArgs e)
-    {
-        var w = MapCanvas.ActualWidth;
-        var h = MapCanvas.ActualHeight;
-        if (w <= 0 || h <= 0) return;
-        _tick++;
-
-        // 数据包流动
-        foreach (var pkt in _packets)
-        {
-            pkt.Progress += pkt.Speed;
-            if (pkt.Progress >= 1.0)
+            var size = c.Type == "ROOT" ? 7.0 : 4.5;
+            var dot = new Rectangle
             {
-                pkt.Progress = 0;
-                pkt.LinkIndex = _rng.Next(_links.Count);
-                pkt.Speed = 0.008 + _rng.NextDouble() * 0.014;
+                Width = size, Height = size,
+                Fill = color,
+                Opacity = c.Type == "UNKNOWN" ? 0.8 : 0.95
+            };
+            Canvas.SetLeft(dot, x - size / 2);
+            Canvas.SetTop(dot, y - size / 2);
+            RadarCanvas.Children.Add(dot);
+
+            if (c.Type == "ROOT")
+            {
+                RadarCanvas.Children.Add(new Ellipse
+                {
+                    Width = 16, Height = 16,
+                    Stroke = red, StrokeThickness = 0.8, Opacity = 0.55
+                });
+                Canvas.SetLeft(RadarCanvas.Children[^1] as UIElement, x - 8);
+                Canvas.SetTop(RadarCanvas.Children[^1] as UIElement, y - 8);
             }
-            UpdatePacketPosition(pkt, w, h);
+
+            var showLabel = c.Type == "ROOT" || c.Id is "LONDON" or "MOSCOW" or "SINGAPORE"
+                or "SYDNEY" or "SAO-PAULO" or "LOS-ANGELES" or "NEW-YORK" or "JOHANNESBURG";
+            if (!showLabel) continue;
+
+            var label = new TextBlock
+            {
+                Text = c.Id,
+                FontFamily = mono,
+                FontSize = c.Type == "ROOT" ? 8 : 7,
+                Foreground = color,
+                Opacity = c.Type == "ROOT" ? 1 : 0.8
+            };
+            var lw = c.Id.Length * (c.Type == "ROOT" ? 4.6 : 4.0) + 4;
+            var lh = 10.0;
+            if (c.Type == "ROOT")
+            {
+                Canvas.SetLeft(label, x + 8);
+                Canvas.SetTop(label, y - 13);
+                RadarCanvas.Children.Add(label);
+                usedLabels.Add(new Rect(x + 8, y - 13, lw, lh));
+                continue;
+            }
+
+            var candidates = new[]
+            {
+                new Point(x + 7, y - 11),
+                new Point(x - lw - 7, y - 11),
+                new Point(x + 7, y + 4),
+                new Point(x - lw - 7, y + 4),
+            };
+            foreach (var pt in candidates)
+            {
+                var rect = new Rect(pt.X, pt.Y, lw, lh);
+                if (rect.Left < 2 || rect.Top < 2 || rect.Right > w - 2 || rect.Bottom > h - 2) continue;
+                if (usedLabels.Any(r => r.IntersectsWith(rect))) continue;
+                usedLabels.Add(rect);
+                Canvas.SetLeft(label, pt.X);
+                Canvas.SetTop(label, pt.Y);
+                RadarCanvas.Children.Add(label);
+                break;
+            }
         }
 
-        // 根服务器脉冲（外环扩展淡出 + 实心点呼吸）
-        for (int r = 0; r < _rootRings.Count && r < 3; r++)
-        {
-            var t = ((_tick * 0.025 + r * 0.4) % 1.0);
-            var ring = _rootRings[r];
-            var size = 8 + t * 24;
-            ring.Width = size;
-            ring.Height = size;
-            ring.Opacity = (1 - t) * 0.7;
-            var n = _nodes[r];
-            var px = n.Nx * w;
-            var py = n.Ny * h;
-            Canvas.SetLeft(ring, px - size / 2);
-            Canvas.SetTop(ring, py - size / 2);
+        // 中心
+        RadarCanvas.Children.Add(new Ellipse { Width = 8, Height = 8, Fill = red, Opacity = 0.9 });
+        Canvas.SetLeft(RadarCanvas.Children[^1] as UIElement, cx - 4);
+        Canvas.SetTop(RadarCanvas.Children[^1] as UIElement, cy - 4);
 
-            if (r < _nodeDots.Count)
-                _nodeDots[r].Opacity = 0.7 + 0.3 * (0.5 + 0.5 * Math.Sin(_tick * 0.12 + r));
-        }
+        // 左上角状态
+        var status = new StackPanel();
+        status.Children.Add(new TextBlock { Text = "RADAR // SECTOR 07", FontFamily = mono, FontSize = 9, FontWeight = FontWeights.SemiBold, Foreground = white });
+        status.Children.Add(new TextBlock { Text = "ACTIVE TRACKING · 19 CONTACTS", FontFamily = mono, FontSize = 7, Foreground = dim, Margin = new Thickness(0, 2, 0, 0) });
+        Canvas.SetLeft(status, 12);
+        Canvas.SetTop(status, 10);
+        RadarCanvas.Children.Add(status);
 
-        // 连接线随机闪烁
-        if (_tick % 3 == 0)
-        {
-            for (int i = 0; i < _linkLines.Count; i++)
-                _linkLines[i].Opacity = 0.18 + _rng.NextDouble() * 0.35;
-        }
-
-        // UEG 节点随机闪烁
-        for (int i = 3; i < _nodeDots.Count; i++)
-        {
-            if (_rng.NextDouble() < 0.04)
-                _nodeDots[i].Opacity = 0.4 + _rng.NextDouble() * 0.5;
-        }
+        // 图例
+        var legend = new StackPanel { Orientation = Orientation.Horizontal };
+        legend.Children.Add(LegendItem(red, "ROOT SERVER"));
+        legend.Children.Add(LegendItem(white, "UEG NODE"));
+        legend.Children.Add(LegendItem(amber, "UNKNOWN"));
+        Canvas.SetLeft(legend, 12);
+        Canvas.SetTop(legend, h - 26);
+        RadarCanvas.Children.Add(legend);
     }
 
-    private void OnStatTick(object? sender, EventArgs e)
+    private static Polygon BuildSweepSector(double cx, double cy, double radius)
     {
-        var total = _nodes.Count;
+        var points = new PointCollection { new Point(cx, cy) };
+        for (int a = -22; a <= 0; a += 2)
+        {
+            var rad = (a - 90) * Math.PI / 180;
+            points.Add(new Point(cx + radius * Math.Cos(rad), cy + radius * Math.Sin(rad)));
+        }
+        return new Polygon { Points = points, IsHitTestVisible = false };
+    }
+
+    private FrameworkElement LegendItem(Brush brush, string text)
+    {
+        var sp = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 0, 12, 0) };
+        sp.Children.Add(new Rectangle { Width = 6, Height = 6, Fill = brush, Margin = new Thickness(0, 0, 5, 0), VerticalAlignment = VerticalAlignment.Center });
+        sp.Children.Add(new TextBlock { Text = text, FontFamily = (FontFamily)FindResource("CondensedFont"), FontSize = 7, Foreground = (Brush)FindResource("TextTertiaryBrush"), VerticalAlignment = VerticalAlignment.Center });
+        return sp;
+    }
+
+    private void Tick()
+    {
+        _sweepAngle = (_sweepAngle + 1.6) % 360;
+        if (_sweepRotate != null) _sweepRotate.Angle = _sweepAngle;
+        _tick++;
+    }
+
+    private void UpdateStats()
+    {
+        var total = Contacts.Length;
         var offline = _rng.Next(0, 3);
-        var online = total - offline;
-        NodesStat.Text = $"{online}/{total}";
+        NodesStat.Text = $"{total - offline}/{total}";
         BandwidthStat.Text = $"{480 + _rng.Next(0, 80)} Tbps";
         LatencyStat.Text = $"{8 + _rng.Next(0, 14)} ms";
-        ClockText.Text = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss 'UTC'");
     }
 
-    /// <summary>
-    /// 刷新拓扑统计状态，供外部调用。
-    /// </summary>
-    public void RefreshStatus()
-    {
-        OnStatTick(null, EventArgs.Empty);
-        for (int i = 0; i < _linkLines.Count; i++)
-            _linkLines[i].Opacity = 0.2 + _rng.NextDouble() * 0.5;
-    }
+    public void RefreshStatus() => UpdateStats();
 }

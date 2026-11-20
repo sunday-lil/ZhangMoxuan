@@ -30,7 +30,7 @@ public partial class DataStream : UserControl
     {
         var line = GenerateLine();
         _lines.Add(line);
-        if (_lines.Count > 18) _lines.RemoveAt(0);
+        if (_lines.Count > 8) _lines.RemoveAt(0);
         Stream.Text = string.Join("\n", _lines);
     }
 

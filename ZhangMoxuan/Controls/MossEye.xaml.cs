@@ -2,14 +2,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Shapes;
-using System.Windows.Threading;
+using System.Windows.Media.Effects;
 
 namespace ZhangMoxuan.Controls;
 
 /// <summary>
-/// MOSS 之眼控件：影片中 550W 最核心视觉符号（致敬《2001太空漫游》HAL9000）。
-/// 包含：外环刻度、旋转扫描弧、瞳孔呼吸、注视跟踪、情绪状态切换（红/蓝）。
+/// 550W 光学传感器：白色/灰色金属外壳、黑色镜筒、红色虹膜。
+/// 状态只改变虹膜亮度、呼吸频率与光晕，不再使用悬浮的红色圆环。
 /// </summary>
 public partial class MossEye : UserControl
 {
@@ -30,101 +29,8 @@ public partial class MossEye : UserControl
     public MossEye()
     {
         InitializeComponent();
-        Loaded += MossEye_Loaded;
-        SizeChanged += (_, _) => Rebuild();
-        Unloaded += (_, _) =>
-        {
-            // 控件被导航移除后停止瞳孔动画与旋转，避免动画时钟继续持有已卸载控件。
-            _stateStoryboard?.Stop();
-            ArcRotate.BeginAnimation(RotateTransform.AngleProperty, null);
-        };
-    }
-
-    private void MossEye_Loaded(object sender, RoutedEventArgs e)
-    {
-        Rebuild();
-        // 扫描弧旋转：DoubleAnimation 跑在合成线程，避免 60fps DispatcherTimer 占用 UI 线程
-        var rotate = new DoubleAnimation(0, 360, TimeSpan.FromSeconds(4)) { RepeatBehavior = RepeatBehavior.Forever };
-        ArcRotate.BeginAnimation(RotateTransform.AngleProperty, rotate);
-        ApplyState(State);
-    }
-
-    private void Rebuild()
-    {
-        var w = ActualWidth;
-        var h = ActualHeight;
-        if (w <= 0 || h <= 0) return;
-
-        var cx = w / 2;
-        var cy = h / 2;
-        var radius = Math.Min(w, h) / 2 - 4;
-        var ballR = radius * 0.52;
-        var pupilR = ballR * 0.32;
-
-        // 外环刻度
-        RingCanvas.Children.Clear();
-        RingCanvas.Width = w;
-        RingCanvas.Height = h;
-        for (int i = 0; i < 72; i++)
-        {
-            var angle = i * 5 * Math.PI / 180;
-            var isMajor = i % 6 == 0;
-            var r1 = radius - (isMajor ? 10 : 5);
-            var r2 = radius;
-            var line = new Line
-            {
-                X1 = cx + r1 * Math.Cos(angle),
-                Y1 = cy + r1 * Math.Sin(angle),
-                X2 = cx + r2 * Math.Cos(angle),
-                Y2 = cy + r2 * Math.Sin(angle),
-                Stroke = (Brush)FindResource("RedDimBrush"),
-                StrokeThickness = isMajor ? 1.2 : 0.6,
-                Opacity = isMajor ? 0.9 : 0.5
-            };
-            RingCanvas.Children.Add(line);
-        }
-
-        // 旋转扫描弧
-        Arc.Width = w;
-        Arc.Height = h;
-        var pg = new PathGeometry();
-        var fig = new PathFigure { StartPoint = new Point(cx + radius * 0.9, cy) };
-        fig.Segments.Add(new ArcSegment(
-            new Point(cx + radius * 0.5, cy + radius * 0.75),
-            new Size(radius * 0.9, radius * 0.9), 0, false, SweepDirection.Clockwise, true));
-        pg.Figures.Add(fig);
-        Arc.Data = pg;
-        ArcRotate.CenterX = cx;
-        ArcRotate.CenterY = cy;
-
-        // 眼球
-        Ball.Width = ballR * 2;
-        Ball.Height = ballR * 2;
-        Ball.HorizontalAlignment = HorizontalAlignment.Left;
-        Ball.VerticalAlignment = VerticalAlignment.Top;
-        Ball.RenderTransform = new TranslateTransform(cx - ballR, cy - ballR);
-
-        InnerRing.Width = ballR * 2.4;
-        InnerRing.Height = ballR * 2.4;
-        InnerRing.HorizontalAlignment = HorizontalAlignment.Left;
-        InnerRing.VerticalAlignment = VerticalAlignment.Top;
-        InnerRing.RenderTransform = new TranslateTransform(cx - ballR * 1.2, cy - ballR * 1.2);
-
-        // 瞳孔
-        Pupil.Width = pupilR * 2;
-        Pupil.Height = pupilR * 2;
-        Pupil.HorizontalAlignment = HorizontalAlignment.Left;
-        Pupil.VerticalAlignment = VerticalAlignment.Top;
-        Pupil.RenderTransform = new TranslateTransform(cx - pupilR, cy - pupilR);
-        PupilScale.CenterX = pupilR;
-        PupilScale.CenterY = pupilR;
-
-        // 高光
-        Glint.Width = pupilR * 0.4;
-        Glint.Height = pupilR * 0.4;
-        Glint.HorizontalAlignment = HorizontalAlignment.Left;
-        Glint.VerticalAlignment = VerticalAlignment.Top;
-        Glint.RenderTransform = new TranslateTransform(cx - pupilR * 0.7, cy - pupilR * 0.7);
+        Loaded += (_, _) => ApplyState(State);
+        Unloaded += (_, _) => _stateStoryboard?.Stop();
     }
 
     private static void OnStateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -138,52 +44,50 @@ public partial class MossEye : UserControl
         _stateStoryboard?.Stop();
 
         var sb = new Storyboard();
-        var breath = new DoubleAnimationUsingKeyFrames { Duration = TimeSpan.FromSeconds(2), RepeatBehavior = RepeatBehavior.Forever };
+        var breath = new DoubleAnimationUsingKeyFrames
+        {
+            Duration = TimeSpan.FromSeconds(2),
+            RepeatBehavior = RepeatBehavior.Forever
+        };
+
         Color color;
         double blur;
+        double low;
+        double high;
+        double period;
 
         switch (state)
         {
             case EyeState.Idle:
-                breath.KeyFrames.Add(new LinearDoubleKeyFrame(0.85, KeyTime.FromTimeSpan(TimeSpan.FromSeconds(0))));
-                breath.KeyFrames.Add(new LinearDoubleKeyFrame(1.0, KeyTime.FromTimeSpan(TimeSpan.FromSeconds(1))));
-                breath.KeyFrames.Add(new LinearDoubleKeyFrame(0.85, KeyTime.FromTimeSpan(TimeSpan.FromSeconds(2))));
-                color = Color.FromRgb(0x8A, 0x3A, 0x42);   // RedMute
-                blur = 18;
+                low = 0.82; high = 0.96; period = 2.0;
+                color = Color.FromRgb(0x6B, 0x2B, 0x33); blur = 12;
                 break;
             case EyeState.Observing:
-                breath.KeyFrames.Add(new LinearDoubleKeyFrame(0.9, KeyTime.FromTimeSpan(TimeSpan.FromSeconds(0))));
-                breath.KeyFrames.Add(new LinearDoubleKeyFrame(1.05, KeyTime.FromTimeSpan(TimeSpan.FromSeconds(0.6))));
-                breath.KeyFrames.Add(new LinearDoubleKeyFrame(0.9, KeyTime.FromTimeSpan(TimeSpan.FromSeconds(1.2))));
-                color = Color.FromRgb(0xD8, 0x43, 0x4C);   // MossRed
-                blur = 22;
+                low = 0.92; high = 1.04; period = 1.8;
+                color = Color.FromRgb(0xF0, 0x4A, 0x4A); blur = 22;
                 break;
             case EyeState.Analyzing:
-                breath.KeyFrames.Add(new LinearDoubleKeyFrame(0.7, KeyTime.FromTimeSpan(TimeSpan.FromSeconds(0))));
-                breath.KeyFrames.Add(new LinearDoubleKeyFrame(1.1, KeyTime.FromTimeSpan(TimeSpan.FromSeconds(0.25))));
-                breath.KeyFrames.Add(new LinearDoubleKeyFrame(0.7, KeyTime.FromTimeSpan(TimeSpan.FromSeconds(0.5))));
-                color = Color.FromRgb(0xF2, 0x55, 0x5E);   // MossRedBright
-                blur = 28;
+                low = 0.92; high = 1.12; period = 0.7;
+                color = Color.FromRgb(0xFF, 0x6A, 0x6A); blur = 30;
                 break;
             case EyeState.Speaking:
-                breath.KeyFrames.Add(new LinearDoubleKeyFrame(0.95, KeyTime.FromTimeSpan(TimeSpan.FromSeconds(0))));
-                breath.KeyFrames.Add(new LinearDoubleKeyFrame(1.0, KeyTime.FromTimeSpan(TimeSpan.FromSeconds(0.4))));
-                breath.KeyFrames.Add(new LinearDoubleKeyFrame(0.95, KeyTime.FromTimeSpan(TimeSpan.FromSeconds(0.8))));
-                color = Color.FromRgb(0xF2, 0x55, 0x5E);   // MossRedBright
-                blur = 24;
+                low = 1.0; high = 1.05; period = 0.9;
+                color = Color.FromRgb(0xF0, 0x4A, 0x4A); blur = 24;
                 break;
             case EyeState.Alert:
-                breath.KeyFrames.Add(new LinearDoubleKeyFrame(0.6, KeyTime.FromTimeSpan(TimeSpan.FromSeconds(0))));
-                breath.KeyFrames.Add(new LinearDoubleKeyFrame(1.15, KeyTime.FromTimeSpan(TimeSpan.FromSeconds(0.18))));
-                breath.KeyFrames.Add(new LinearDoubleKeyFrame(0.6, KeyTime.FromTimeSpan(TimeSpan.FromSeconds(0.36))));
-                color = Color.FromRgb(0xFF, 0x3A, 0x44);   // Alert: 鲜红但不过曝
-                blur = 32;
+                low = 0.86; high = 1.18; period = 0.36;
+                color = Color.FromRgb(0xFF, 0x3A, 0x3A); blur = 36;
                 break;
             default:
-                color = Color.FromRgb(0x8A, 0x3A, 0x42);
-                blur = 18;
+                low = 0.9; high = 1.0; period = 2.0;
+                color = Color.FromRgb(0xF0, 0x4A, 0x4A); blur = 20;
                 break;
         }
+
+        breath.Duration = TimeSpan.FromSeconds(period);
+        breath.KeyFrames.Add(new LinearDoubleKeyFrame(low, KeyTime.FromTimeSpan(TimeSpan.Zero)));
+        breath.KeyFrames.Add(new LinearDoubleKeyFrame(high, KeyTime.FromTimeSpan(TimeSpan.FromSeconds(period / 2))));
+        breath.KeyFrames.Add(new LinearDoubleKeyFrame(low, KeyTime.FromTimeSpan(TimeSpan.FromSeconds(period))));
 
         Storyboard.SetTarget(breath, PupilScale);
         Storyboard.SetTargetProperty(breath, new PropertyPath(ScaleTransform.ScaleXProperty));
@@ -194,11 +98,20 @@ public partial class MossEye : UserControl
         Storyboard.SetTargetProperty(breathY, new PropertyPath(ScaleTransform.ScaleYProperty));
         sb.Children.Add(breathY);
 
+        var glow = new DoubleAnimation(0.55, 1.0, TimeSpan.FromSeconds(period / 2))
+        {
+            AutoReverse = true,
+            RepeatBehavior = RepeatBehavior.Forever
+        };
+        Storyboard.SetTarget(glow, PupilGlow);
+        Storyboard.SetTargetProperty(glow, new PropertyPath(DropShadowEffect.OpacityProperty));
+        sb.Children.Add(glow);
+
         Pupil.Fill = new SolidColorBrush(color);
         PupilGlow.Color = color;
         PupilGlow.BlurRadius = blur;
 
-        sb.Begin();
+        sb.Begin(this);
         _stateStoryboard = sb;
     }
 }

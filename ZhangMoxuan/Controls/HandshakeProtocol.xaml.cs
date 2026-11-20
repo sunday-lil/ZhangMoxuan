@@ -18,7 +18,7 @@ public partial class HandshakeProtocol : UserControl
 
     private class StepRow
     {
-        public Ellipse Light = null!;
+        public Rectangle Light = null!;
         public TextBlock Elapsed = null!;
         public TextBlock StatusText = null!;
         public Rectangle ProgressFill = null!;
@@ -71,20 +71,21 @@ public partial class HandshakeProtocol : UserControl
         StepsPanel.Children.Clear();
         _rows.Clear();
 
-        var mono = (FontFamily)FindResource("MonoFont");
+        var mono = (FontFamily)FindResource("CondensedFont");
+        var sans = (FontFamily)FindResource("SansFont");
         var textBrush = (Brush)FindResource("TextBrush");
         var redBrush = (Brush)FindResource("RedBrush");
         var gridBrush = (Brush)FindResource("GridBrush");
 
         for (int i = 0; i < StepNames.Length; i++)
         {
-            var row = new Grid { Margin = new Thickness(0, 4, 0, 4) };
-            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(22) });    // 序号
-            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }); // 协议名
-            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(12) });    // 状态灯
-            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(54) });    // 状态文字
-            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(46) });    // 耗时
-            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(92) });    // 进度条
+            var row = new Grid { Margin = new Thickness(0, 2, 0, 2), Height = 26 };
+            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(22) });
+            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(10) });
+            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(46) });
+            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(40) });
+            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(86) });
 
             var num = new TextBlock
             {
@@ -98,16 +99,16 @@ public partial class HandshakeProtocol : UserControl
             var name = new TextBlock
             {
                 Text = StepNames[i],
-                FontFamily = mono, FontSize = 12, Foreground = textBrush,
+                FontFamily = sans, FontSize = 11, Foreground = textBrush,
                 VerticalAlignment = VerticalAlignment.Center,
                 TextTrimming = TextTrimming.CharacterEllipsis
             };
             Grid.SetColumn(name, 1);
             row.Children.Add(name);
 
-            var light = new Ellipse
+            var light = new Rectangle
             {
-                Width = 8, Height = 8,
+                Width = 6, Height = 6,
                 Fill = gridBrush,
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center
@@ -118,7 +119,7 @@ public partial class HandshakeProtocol : UserControl
             var statusText = new TextBlock
             {
                 Text = "PENDING",
-                FontFamily = mono, FontSize = 10, Foreground = textBrush,
+                FontFamily = mono, FontSize = 8, Foreground = textBrush,
                 VerticalAlignment = VerticalAlignment.Center
             };
             Grid.SetColumn(statusText, 3);
@@ -127,7 +128,7 @@ public partial class HandshakeProtocol : UserControl
             var elapsed = new TextBlock
             {
                 Text = "--ms",
-                FontFamily = mono, FontSize = 10, Foreground = textBrush,
+                FontFamily = mono, FontSize = 8, Foreground = textBrush,
                 VerticalAlignment = VerticalAlignment.Center
             };
             Grid.SetColumn(elapsed, 4);
@@ -159,9 +160,9 @@ public partial class HandshakeProtocol : UserControl
     {
         OverallHost.Children.Clear();
         var gridBrush = (Brush)FindResource("GridBrush");
-        var redBrush = (Brush)FindResource("RedBrush");
-        var bg = new Rectangle { Fill = gridBrush, Width = 180, Height = 6 };
-        var fill = new Rectangle { Fill = redBrush, Width = 0, Height = 6, HorizontalAlignment = HorizontalAlignment.Left };
+        var redBrush = (Brush)FindResource("GreenBrush");
+        var bg = new Rectangle { Fill = gridBrush, Width = 180, Height = 4 };
+        var fill = new Rectangle { Fill = redBrush, Width = 0, Height = 4, HorizontalAlignment = HorizontalAlignment.Left };
         OverallHost.Children.Add(bg);
         OverallHost.Children.Add(fill);
         _overallFill = fill;
@@ -218,10 +219,10 @@ public partial class HandshakeProtocol : UserControl
                 row.Elapsed.Text = "--ms";
                 break;
             case StepState.Ok:
-                row.Light.Fill = red;
+                row.Light.Fill = (Brush)FindResource("GreenBrush");
                 row.Light.Opacity = 1;
                 row.StatusText.Text = "OK";
-                row.StatusText.Foreground = red;
+                row.StatusText.Foreground = (Brush)FindResource("GreenBrush");
                 row.Elapsed.Text = $"{(int)elapsedMs}ms";
                 row.ProgressFill.BeginAnimation(WidthProperty, null);
                 row.ProgressFill.Width = row.ProgressMax;
