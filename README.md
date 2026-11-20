@@ -13,7 +13,7 @@
 [![License](https://img.shields.io/github/license/sunday-lil/ZhangMoxuan)](LICENSE)
 [![.NET](https://img.shields.io/badge/.NET-10.0-512BD4)](https://dotnet.microsoft.com/)
 
-[截图](#截图) · [快速开始](#快速开始) · [功能模块](#功能模块) · [构建](#从源码构建) · [贡献](CONTRIBUTING.md) · [更新日志](CHANGELOG.md)
+[截图](#截图) · [快速开始](#快速开始) · [功能模块](#功能模块) · [设计依据](docs/UI_REFERENCE.md) · [构建](#从源码构建) · [贡献](CONTRIBUTING.md) · [更新日志](CHANGELOG.md)
 
 </div>
 
@@ -23,18 +23,29 @@
 
 ## 项目状态
 
-- 最新版本：**v1.2.0**（2026-10-24）
+- 最新版本：**v2.0.0**（2026-11-20）
 - 维护状态：维护中，欢迎 Issue / PR
-- 最近复核：**2026-11-17** · .NET SDK 10.0.401 · Windows 11 Build 26300 · `dotnet build` 0 warning / 0 error · UI 冒烟 7/7
+- 最近复核：**2026-11-20** · .NET SDK 10.0.401 · Windows 11 Build 26300 · `dotnet build` 0 warning / 0 error · UI 冒烟 7/7
 - CI：<https://github.com/sunday-lil/ZhangMoxuan/actions/workflows/build.yml>
 
 ## 简介
 
 这是一个 Windows 原生的“桌面玩具”：打开后，你的电脑会短暂变成 550W 智能量子计算机。它会完成开机自检、与全球根服务器握手、激活 8192 量子比特核心，然后由 550W 翻转成 MOSS，进入全屏控制台。
 
-界面刻意保持影片中的高对比单色 HUD：深邃蓝黑底、克制的赤红、少量人类蓝点缀；所有图形、动画与排版均由 WPF 直接绘制，不依赖浏览器内核。
+界面按《流浪地球 2》制作手记的规范重建：深灰底、红/中黄/亮白跳色、正交细线边框、思源黑体（系统以微软雅黑替代）+ Rajdhani；所有图形、动画与排版均由 WPF 直接绘制，不依赖浏览器内核。
 
-**v1.2.0** 起提供 `--skip-boot` 快速调试与 `--capture` 离屏截图，仓库内所有截图都可以一条命令重新生成。
+**v2.0.0** 完成系统界面的整体重建：UEG 雷达监控、550A 数字生命模拟、太空电梯密钥闸机与 550W 金属外壳光学传感器；同时保留 `--skip-boot` 与 `--capture`，仓库内所有截图都可以一条命令重新生成。
+
+## 设计依据
+
+视觉不是凭感觉“加红”，而是按影片制作规范拆解后重建：
+
+- 中文字体：思源黑体（Windows 以微软雅黑替代）；英文字体：Rajdhani（内置，SIL OFL）
+- 整体深灰色系，红 / 中黄 / 亮白作为跳色，避免大面积蓝绿
+- 边框避免斜线，改为正交分组框、细线表格、矩阵扫描
+- 数字生命页按 550A 布局：左侧参数、右侧摄像头、底部倒计时 + 暂停键
+
+完整检索过程、影片界面拆解与逐项映射见 [UI_REFERENCE.md](docs/UI_REFERENCE.md)。
 
 ## 快速开始
 
@@ -122,15 +133,15 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\smoke-test.ps1
 | 模块 | 内容 |
 |------|------|
 | **MONITOR** 监控中心 | 地球状态（轨道速度 / 距木星 / 人口 / 地下城）+ 行星发动机网络（10000 台 / 区域状态）+ 量子核心可视化 |
-| **NETWORK** 网络拓扑 | 点阵世界地图、17 个节点、3 座根服务器脉冲、数据包流动、7 步握手（可重跑） |
-| **DIGITAL LIFE** 数字生命 | 图丫丫（红）与图恒宇（蓝）数字生命卡、意识上传进度、生命体征、迭代日志 |
+| **NETWORK** 网络拓扑 | UEG 雷达距离环、19 个接触点、3 座根服务器、扫描扇区、7 步握手（可重跑）与节点清单 |
+| **DIGITAL LIFE** 数字生命 | 550A 模拟图丫丫：左侧数字行为/语音/情绪/场景参数，右侧摄像头识别，底部生命倒计时、暂停键与进度条 |
 | **CRISIS** 危机预测 | 2044 太空电梯 / 2058 月球坠落 / 2075 木星引力 / 2078 太阳氦闪 时间线，自动循环高亮 |
 | **KEY AUTH** 密钥认证 | 北京水下根服务器、180 秒倒计时、数字键盘、密钥 `31415926` 与日志流 |
 | **MOSS DIALOG** 对话 | 5 段式响应（任务分析 / 计算路径 / 资源分配 / 执行预估 / 结果输出），含 5 组预设问答 |
 
 ### 右侧固定面板
 
-MOSS 之眼（Idle / Observing / Analyzing / Speaking / Alert 五种状态）、滚动数据流、快捷命令。
+550W 光学传感器（白色金属外壳 + 黑色镜筒 + 红色虹膜，Idle / Observing / Analyzing / Speaking / Alert 五种状态）、事件流与快捷命令。
 
 ## 从源码构建
 
@@ -161,13 +172,18 @@ CI 在每次 push / PR 时构建 Debug 与 Release；手动触发 `Build` 工作
 │   └── pull_request_template.md
 ├── docs/
 │   ├── icon.png
-│   ├── RELEASE_NOTES_v1.2.0.md
+│   ├── UI_REFERENCE.md            # 影片 UI 规范、来源与重建映射
+│   ├── RELEASE_NOTES_v2.0.0.md
 │   └── screenshots/               # --capture 生成，README 使用
 ├── tools/
 │   ├── generate-icon.py           # Pillow 生成多尺寸 .ico
 │   └── smoke-test.ps1             # 本地 UI 冒烟测试
 ├── ZhangMoxuan/
-│   ├── Assets/moss.ico
+│   ├── Assets/
+│   │   ├── moss.ico               # 550W 硬件风格多尺寸图标
+│   │   ├── Fonts/                 # Rajdhani + OFL 授权
+│   │   ├── sim-room.png           # 程序生成的 550A 场景
+│   │   └── sim-father.png         # 程序生成的摄像头画面
 │   ├── App.xaml(.cs)              # 入口 / 参数 / 日志 / 截图模式
 │   ├── BootWindow.xaml(.cs)       # 4 阶段自检
 │   ├── MainWindow.xaml(.cs)       # 主控台与 6 个页面
@@ -176,8 +192,7 @@ CI 在每次 push / PR 时构建 Debug 与 Release；手动触发 `Build` 工作
 │       ├── QuantumGrid            # 量子比特网格
 │       ├── DataStream             # 数据流
 │       ├── HandshakeProtocol      # 握手协议
-│       ├── NetworkTopology        # 全球拓扑
-│       ├── DigitalLifeCard        # 数字生命卡
+│       ├── NetworkTopology        # 雷达监控
 │       ├── CrisisTimeline         # 危机时间线
 │       └── KeyInputScene          # 密钥场景
 ├── CONTRIBUTING.md
@@ -189,6 +204,7 @@ CI 在每次 push / PR 时构建 Debug 与 Release；手动触发 `Build` 工作
 
 - **.NET 10** + **WPF**（Windows Presentation Foundation）
 - 纯 C#，无第三方 NuGet 依赖，无 WebView2 / CEF / Electron
+- 内置 Rajdhani（SIL OFL），中文回退微软雅黑；图标/场景素材由 Python + Pillow 生成
 - `Storyboard` 动画跑在合成线程；逐帧数据可视化使用 `DispatcherTimer` 并在 `Unloaded` 时停止
 - 日志：`%LOCALAPPDATA%\ZhangMoxuan\moss.log`，超过 512 KB 自动轮转为 `moss.1.log`
 
@@ -229,5 +245,7 @@ CI 在每次 push / PR 时构建 Debug 与 Release；手动触发 `Build` 工作
 ## License
 
 [MIT](LICENSE) © 2026 sunday-lil
+
+字体与第三方素材许可见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
 
 本项目为个人非商业粉丝作品，与《流浪地球》系列电影版权方无关联。

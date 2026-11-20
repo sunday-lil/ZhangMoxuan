@@ -46,14 +46,14 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\smoke-test.ps1
 ZhangMoxuan/
 ├── App.xaml(.cs)              # 入口、参数解析、全局异常与日志、截图模式
 ├── BootWindow.xaml(.cs)       # 4 阶段自检（ESC 可跳过，关闭时取消序列）
-├── MainWindow.xaml(.cs)       # 左侧导航 + 6 个页面 + 右侧 MOSS 之眼
+├── MainWindow.xaml(.cs)       # 左侧导航 + 6 个页面 + 右侧 550W 光学传感器
+├── Assets/                    # 图标、Rajdhani 字体、550A 模拟场景
 └── Controls/                  # 可复用视觉控件
-    ├── MossEye               # MOSS 之眼（5 种状态）
-    ├── QuantumGrid           # 8192 量子比特网格
-    ├── DataStream            # 滚动数据流
+    ├── MossEye               # 550W 金属外壳光学传感器（5 种状态）
+    ├── QuantumGrid           # 正交量子比特矩阵
+    ├── DataStream            # 事件流
     ├── HandshakeProtocol     # 7 步握手协议
-    ├── NetworkTopology       # 全球节点 / 根服务器 / 数据包
-    ├── DigitalLifeCard       # 数字生命卡
+    ├── NetworkTopology       # UEG 雷达监控
     ├── CrisisTimeline        # 危机预测时间线
     └── KeyInputScene         # 密钥认证场景
 ```
@@ -109,10 +109,10 @@ dotnet publish ZhangMoxuan/ZhangMoxuan.csproj -c Release -r win-x64 `
   --self-contained true -p:PublishSingleFile=true `
   -p:IncludeNativeLibrariesForSelfExtract=true -o publish
 
-git tag v1.2.0
-git push origin v1.2.0
-gh release create v1.2.0 publish/ZhangMoxuan.exe `
-  --title "v1.2.0" --notes-file docs/RELEASE_NOTES_v1.2.0.md
+git tag v2.0.0
+git push origin v2.0.0
+gh release create v2.0.0 publish/ZhangMoxuan.exe `
+  --title "v2.0.0" --notes-file docs/RELEASE_NOTES_v2.0.0.md
 ```
 
 发布前请确认 `ZhangMoxuan.csproj` 中的 `<Version>` 与 tag 一致。

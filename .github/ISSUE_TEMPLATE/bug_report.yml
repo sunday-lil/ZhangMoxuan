@@ -14,7 +14,7 @@ body:
     attributes:
       label: 应用版本
       description: 主控台左下角显示的版本号，或 Release 标签
-      placeholder: v1.2.0
+      placeholder: v2.0.0
     validations:
       required: true
 
