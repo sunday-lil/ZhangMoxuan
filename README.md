@@ -54,7 +54,7 @@
 前往 [Releases](https://github.com/sunday-lil/ZhangMoxuan/releases/latest) 下载 `ZhangMoxuan.exe`：
 
 - self-contained 单文件，内置 .NET 10 运行时，目标机无需安装任何运行库
-- 体积约 133 MB，双击即跑
+- 体积约 138 MB，双击即跑
 - 首次运行可能触发 SmartScreen：选择「更多信息 → 仍要运行」
 
 ### 方式二：从源码运行
@@ -157,7 +157,7 @@ dotnet publish ZhangMoxuan/ZhangMoxuan.csproj -c Release -r win-x64 `
   -p:IncludeNativeLibrariesForSelfExtract=true -o publish
 ```
 
-产物为 `publish/ZhangMoxuan.exe`（约 133 MB）。
+产物为 `publish/ZhangMoxuan.exe`（约 138 MB）。
 
 CI 在每次 push / PR 时构建 Debug 与 Release；手动触发 `Build` 工作流还会发布单文件 exe、上传 artifact，并运行 UI 冒烟测试（离屏渲染 7 张页面截图）。
 
