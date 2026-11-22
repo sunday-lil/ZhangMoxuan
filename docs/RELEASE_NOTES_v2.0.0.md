@@ -19,6 +19,13 @@ v1.2.0 的界面是常见的“深蓝黑 + 霓虹红”科幻 HUD，与《流浪
 - **字体与图标**：内置 Rajdhani（SIL OFL），重新生成 550W 硬件风格应用图标。
 - **清理**：移除已不再使用的 `DigitalLifeCard` 旧控件。
 
+## 验证
+
+- 单文件大小：`144,565,272` 字节
+- SHA-256：`ca727d7ccb7f4c0931fdd3d7e7a64059680887d73182104e6c47fe7a3ebe3ae4`
+- 在仅含 exe 的空目录、`DOTNET_ROOT` 指向不存在路径时运行通过，7 张页面截图正常
+- GitHub Actions：Debug / Release 构建、单文件发布、artifact 上传、UI smoke 全部通过
+
 ## 安装
 
 下载 `ZhangMoxuan.exe`（self-contained 单文件，内置 .NET 10 运行时），双击运行。

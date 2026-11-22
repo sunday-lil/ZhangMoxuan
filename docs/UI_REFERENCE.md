@@ -99,3 +99,4 @@ Bing 图片结果中可直接定位到：
 - 未使用任何电影原片截图作为应用素材；数字生命画面为程序生成的近似场景，用来还原版式与信息层级。
 - 系统未安装思源黑体时使用微软雅黑；Rajdhani 以 SIL OFL 授权内置，见 [`Assets/Fonts/OFL.txt`](../ZhangMoxuan/Assets/Fonts/OFL.txt)。
 - 550A 场景是“界面复刻”而非画面复刻；真实影片中的摄像头画面、演员与场景不进入仓库。
+- 最终页面截图见 [`screenshots/`](screenshots/)；所有截图由 `ZhangMoxuan.exe --capture` 生成。

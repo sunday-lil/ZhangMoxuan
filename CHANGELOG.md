@@ -29,6 +29,11 @@
 
 - 旧 `DigitalLifeCard` 控件（已被 550A 模拟页替代）。
 
+### 发布验证
+
+- v2.0.0 单文件在仅含 exe 的空目录、`DOTNET_ROOT` 指向不存在路径时启动并完成 7 张页面截图，确认无需本机 .NET 运行时。
+- GitHub Actions 手动流程（Debug / Release 构建、单文件发布、artifact 上传、UI smoke）通过。
+
 ### 文档
 
 - README、项目结构、发布说明同步到 v2.0.0。

@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="docs/icon.png" width="112" alt="MOSS 之眼图标">
+<img src="docs/icon.png" width="112" alt="550W 光学传感器图标">
 
 # 张莫轩 · 550W / MOSS
 
@@ -25,7 +25,8 @@
 
 - 最新版本：**v2.0.0**（2026-11-20）
 - 维护状态：维护中，欢迎 Issue / PR
-- 最近复核：**2026-11-20** · .NET SDK 10.0.401 · Windows 11 Build 26300 · `dotnet build` 0 warning / 0 error · UI 冒烟 7/7
+- 最近复核：**2026-11-22** · .NET SDK 10.0.401 · Windows 11 Build 26300 · `dotnet build` 0 warning / 0 error · UI 冒烟 7/7
+- 发布验证：v2.0.0 单文件在仅含 exe 的空目录、`DOTNET_ROOT` 指向不存在路径时运行通过，7 张页面截图正常
 - CI：<https://github.com/sunday-lil/ZhangMoxuan/actions/workflows/build.yml>
 
 ## 简介
@@ -188,7 +189,7 @@ CI 在每次 push / PR 时构建 Debug 与 Release；手动触发 `Build` 工作
 │   ├── BootWindow.xaml(.cs)       # 4 阶段自检
 │   ├── MainWindow.xaml(.cs)       # 主控台与 6 个页面
 │   └── Controls/
-│       ├── MossEye                # MOSS 之眼
+│       ├── MossEye                # 550W 光学传感器
 │       ├── QuantumGrid            # 量子比特网格
 │       ├── DataStream             # 数据流
 │       ├── HandshakeProtocol      # 握手协议
@@ -197,6 +198,8 @@ CI 在每次 push / PR 时构建 Debug 与 Release；手动触发 `Build` 工作
 │       └── KeyInputScene          # 密钥场景
 ├── CONTRIBUTING.md
 ├── CHANGELOG.md
+├── THIRD_PARTY_NOTICES.md
+├── LICENSE
 └── ZhangMoxuan.sln
 ```
 
