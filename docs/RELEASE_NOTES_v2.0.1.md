@@ -18,7 +18,7 @@
 - `dotnet build`：0 warning / 0 error
 - 1600×1000 与 1366×768：各 7 张页面截图通过
 - 单文件大小：`144,565,272` 字节
-- SHA-256：`38531e56eaa5991eb4c73411c15fe91da268ddb6a04a5bbaeae807a7094faea6`
+- SHA-256：`2930829f316df72f7e57890b130c4fa3cb76df1e991f9b46f00a1e45016b4c69`
 - 在仅含 exe 的空目录、`DOTNET_ROOT` 指向不存在路径时运行通过（`--capture-size 1366x768`），确认无需本机 .NET 运行时
 
 ## 安装
