@@ -4,7 +4,7 @@
         xmlns:ctl="clr-namespace:ZhangMoxuan.Controls"
         Title="MOSS · 550W" Height="900" Width="1600"
         Icon="pack://application:,,,/Assets/moss.ico"
-        WindowStyle="None" WindowState="Maximized"
+        WindowStyle="None" WindowState="Maximized" ResizeMode="NoResize"
         Background="{StaticResource BgBrush}"
         WindowStartupLocation="CenterScreen">
     <Window.Resources>
@@ -78,7 +78,8 @@
         </Style>
     </Window.Resources>
 
-    <Grid>
+    <Viewbox Stretch="Uniform" StretchDirection="Both">
+    <Grid Width="1600" Height="1000">
         <Grid.RowDefinitions>
             <RowDefinition Height="58"/>
             <RowDefinition Height="*"/>
@@ -354,4 +355,5 @@
             </Rectangle.Fill>
         </Rectangle>
     </Grid>
+    </Viewbox>
 </Window>

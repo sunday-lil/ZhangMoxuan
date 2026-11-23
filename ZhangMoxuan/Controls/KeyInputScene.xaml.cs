@@ -86,6 +86,7 @@ public partial class KeyInputScene : UserControl
         StatusDot.Fill = (Brush)FindResource("AmberBrush");
         _timer.Start();
         _countdownPulse.Begin();
+        LogBox.Clear();
         Log("ROOT SERVER BOOT SEQUENCE INITIATED");
         Log("DIGITAL LIFE CARD // TU_HENGYU + TU_YAYA INSERTED");
         Log("550W QUANTUM INTERFACE ACTIVE");

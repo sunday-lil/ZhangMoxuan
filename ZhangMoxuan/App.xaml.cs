@@ -25,6 +25,8 @@ public partial class App : Application
     private static readonly string LogPath = Path.Combine(LogDirectory, "moss.log");
 
     private static string? _captureDirectory;
+    private static int _captureWidth = 1600;
+    private static int _captureHeight = 1000;
     private bool _mainWindowOpened;
 
     /// <summary>是否通过 <c>--skip-boot</c> 跳过自检。</summary>
@@ -124,6 +126,21 @@ public partial class App : Application
                     if (i + 1 < args.Length && !args[i + 1].StartsWith('-'))
                         _captureDirectory = Path.GetFullPath(args[++i]);
                     break;
+                case "--capture-size":
+                    if (i + 1 < args.Length)
+                    {
+                        var size = args[++i].Split('x', 'X');
+                        if (size.Length == 2
+                            && int.TryParse(size[0], out var width)
+                            && int.TryParse(size[1], out var height)
+                            && width is >= 800 and <= 3840
+                            && height is >= 600 and <= 2160)
+                        {
+                            _captureWidth = width;
+                            _captureHeight = height;
+                        }
+                    }
+                    break;
             }
         }
     }
@@ -160,8 +177,8 @@ public partial class App : Application
                 WindowStartupLocation = WindowStartupLocation.Manual,
                 Left = -8000,
                 Top = -8000,
-                Width = 1600,
-                Height = 1000,
+                Width = _captureWidth,
+                Height = _captureHeight,
                 ShowInTaskbar = false,
                 ShowActivated = false,
             };
@@ -170,7 +187,7 @@ public partial class App : Application
             var bootFile = Path.Combine(directory, "boot.png");
             Capture(boot, bootFile);
             Log($"截图: boot -> {bootFile}");
-            boot.Close();
+            if (boot.IsVisible) boot.Close();
             boot = null;
             await Task.Delay(200);
 
@@ -180,8 +197,8 @@ public partial class App : Application
                 WindowStartupLocation = WindowStartupLocation.Manual,
                 Left = -8000,
                 Top = -8000,
-                Width = 1600,
-                Height = 1000,
+                Width = _captureWidth,
+                Height = _captureHeight,
                 ShowInTaskbar = false,
                 ShowActivated = false,
             };
@@ -216,8 +233,8 @@ public partial class App : Application
         }
         finally
         {
-            boot?.Close();
-            window?.Close();
+            if (boot?.IsVisible == true) boot.Close();
+            if (window?.IsVisible == true) window.Close();
             Shutdown(failed ? 1 : 0);
         }
     }

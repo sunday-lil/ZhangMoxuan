@@ -33,6 +33,7 @@ public partial class MainWindow : Window
     private ScrollViewer? _dialogScroll;
     private CancellationTokenSource? _dialogCts;
     private bool _dialogBusy;
+    private string _currentPage = "dashboard";
 
     private TextBlock? _simTimeText;
     private ProgressBar? _simProgress;
@@ -211,7 +212,7 @@ public partial class MainWindow : Window
         LoadCpu.Text = $"CPU {cpu}%";
         LoadNet.Text = $"NET {net:F2} Tbps";
         EyeMetricTemp.Text = $"{4.1 + Random.Shared.NextDouble() * 0.2:F2} K";
-        if (SideEye.State != MossEye.EyeState.Speaking && SideEye.State != MossEye.EyeState.Alert)
+        if (_currentPage is "dashboard" or "digital" or "dialog")
         {
             SideEye.State = cpu > 22 ? MossEye.EyeState.Analyzing : MossEye.EyeState.Observing;
             EyeStateText.Text = SideEye.State == MossEye.EyeState.Analyzing ? "ANALYZING" : "OBSERVING";
@@ -241,6 +242,7 @@ public partial class MainWindow : Window
         foreach (var child in new[] { NavDashboard, NavNetwork, NavDigital, NavCrisis, NavKey, NavDialog })
             child.Tag = null;
 
+        _currentPage = page;
         PageHost.Children.Clear();
         BottomStatus.Text = "MOSS // 延续人类文明的最优选择";
 
@@ -619,7 +621,7 @@ public partial class MainWindow : Window
         };
         foreach (var (name, lat, load, status) in nodes)
         {
-            var row = new Grid { Height = 20 };
+            var row = new Grid { Height = 18 };
             row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
             row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(54) });
             row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(58) });
