@@ -169,6 +169,7 @@ CI 在每次 push / PR 时构建 Debug 与 Release；手动触发 `Build` 工作
 .
 ├── .github/
 │   ├── workflows/build.yml        # Windows CI：Debug / Release 构建
+│   ├── workflows/release.yml      # 手动发布并上传 release asset
 │   ├── ISSUE_TEMPLATE/            # Bug / Feature 表单
 │   ├── dependabot.yml             # GitHub Actions 月度分组升级
 │   └── pull_request_template.md
