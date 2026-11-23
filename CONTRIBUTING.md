@@ -118,7 +118,7 @@ gh release create v2.0.1 publish/ZhangMoxuan.exe `
   --title "v2.0.1" --notes-file docs/RELEASE_NOTES_v2.0.1.md
 ```
 
-发布前请确认 `ZhangMoxuan.csproj` 中的 `<Version>` 与 tag 一致。发布后建议把 asset 下载到只含 exe 的空目录，用 `--capture` 跑一遍 7 张页面，确认单文件在无本机 .NET 环境时也能运行。
+发布前请确认 `ZhangMoxuan.csproj` 中的 `<Version>` 与 tag 一致。发布后建议把 asset 下载到只含 exe 的空目录，用 `--capture` 跑一遍 7 张页面，确认单文件在无本机 .NET 环境时也能运行。若本地上传过慢，可在 Actions 手动触发 `Release` 工作流，用 Runner 重新构建并上传 asset。
 
 ## 行为准则
 

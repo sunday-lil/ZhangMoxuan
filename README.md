@@ -161,7 +161,7 @@ dotnet publish ZhangMoxuan/ZhangMoxuan.csproj -c Release -r win-x64 `
 
 产物为 `publish/ZhangMoxuan.exe`（约 138 MB）。
 
-CI 在每次 push / PR 时构建 Debug 与 Release；手动触发 `Build` 工作流还会发布单文件 exe、上传 artifact，并运行 UI 冒烟测试（离屏渲染 7 张页面截图）。
+CI 在每次 push / PR 时构建 Debug 与 Release；手动触发 `Build` 工作流还会发布单文件 exe、上传 artifact，并运行 UI 冒烟测试（离屏渲染 7 张页面截图）。`Release` 工作流可在 GitHub Runner 上重新构建并上传 release asset，适合网络不稳定时使用。
 
 ## 项目结构
 
