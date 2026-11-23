@@ -24,6 +24,7 @@ dotnet run --project ZhangMoxuan/ZhangMoxuan.csproj
 |------|------|
 | `--skip-boot` | 跳过 4 阶段开机自检，直接进入主控台 |
 | `--capture [目录]` | 在屏幕外渲染全部 7 张页面（6 个功能页 + 自检）为 PNG（默认输出到可执行文件旁的 `screenshots/`） |
+| `--capture-size WxH` | 指定截图尺寸，默认 `1600x1000`；用于 1366×768 等低分辨率回归 |
 
 ```powershell
 # 快速调试
@@ -63,6 +64,7 @@ ZhangMoxuan/
 - **不引入浏览器内核**（WebView2 / CEF / Electron）与第三方 UI 框架。
 - 主题资源集中在 [`App.xaml`](ZhangMoxuan/App.xaml)，新控件请复用其中的颜色、字体与 `HudLabel` 样式，不要硬编码新的品牌色。
 - 影片 UI 规范、字体/颜色/边框约束与重建映射见 [`docs/UI_REFERENCE.md`](docs/UI_REFERENCE.md)，新增界面前先对照。
+- 主界面外壳固定为 1600×1000 设计稿并由 `Viewbox` 等比缩放；页面内部不要依赖窗口实际像素尺寸。
 - 动画优先使用 `Storyboard` / `DoubleAnimation`（跑在合成线程）；需要逐帧更新的才用 `DispatcherTimer`。
 - 任何 `DispatcherTimer`、`Storyboard`、`CancellationTokenSource` 都必须在 `Unloaded` / `Closed` 中停止或取消，避免页面切走后继续 tick。
 - 面向用户的文案以中文为主、英文 HUD 标签为辅；提交前请确认中文与数字对齐没有破版。
@@ -110,10 +112,10 @@ dotnet publish ZhangMoxuan/ZhangMoxuan.csproj -c Release -r win-x64 `
   --self-contained true -p:PublishSingleFile=true `
   -p:IncludeNativeLibrariesForSelfExtract=true -o publish
 
-git tag v2.0.0
-git push origin v2.0.0
-gh release create v2.0.0 publish/ZhangMoxuan.exe `
-  --title "v2.0.0" --notes-file docs/RELEASE_NOTES_v2.0.0.md
+git tag v2.0.1
+git push origin v2.0.1
+gh release create v2.0.1 publish/ZhangMoxuan.exe `
+  --title "v2.0.1" --notes-file docs/RELEASE_NOTES_v2.0.1.md
 ```
 
 发布前请确认 `ZhangMoxuan.csproj` 中的 `<Version>` 与 tag 一致。发布后建议把 asset 下载到只含 exe 的空目录，用 `--capture` 跑一遍 7 张页面，确认单文件在无本机 .NET 环境时也能运行。

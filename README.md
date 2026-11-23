@@ -23,10 +23,10 @@
 
 ## 项目状态
 
-- 最新版本：**v2.0.0**（2026-11-20）
+- 最新版本：**v2.0.1**（2026-11-23）
 - 维护状态：维护中，欢迎 Issue / PR
-- 最近复核：**2026-11-22** · .NET SDK 10.0.401 · Windows 11 Build 26300 · `dotnet build` 0 warning / 0 error · UI 冒烟 7/7
-- 发布验证：v2.0.0 单文件在仅含 exe 的空目录、`DOTNET_ROOT` 指向不存在路径时运行通过，7 张页面截图正常
+- 最近复核：**2026-11-23** · .NET SDK 10.0.401 · Windows 11 Build 26300 · `dotnet build` 0 warning / 0 error · UI 冒烟 7/7 · 1600×1000 / 1366×768 双尺寸
+- 发布验证：v2.0.1 单文件在仅含 exe 的空目录、`DOTNET_ROOT` 指向不存在路径时运行通过，7 张页面截图正常
 - CI：<https://github.com/sunday-lil/ZhangMoxuan/actions/workflows/build.yml>
 
 ## 简介
@@ -35,7 +35,7 @@
 
 界面按《流浪地球 2》制作手记的规范重建：深灰底、红/中黄/亮白跳色、正交细线边框、思源黑体（系统以微软雅黑替代）+ Rajdhani；所有图形、动画与排版均由 WPF 直接绘制，不依赖浏览器内核。
 
-**v2.0.0** 完成系统界面的整体重建：UEG 雷达监控、550A 数字生命模拟、太空电梯密钥闸机与 550W 金属外壳光学传感器；同时保留 `--skip-boot` 与 `--capture`，仓库内所有截图都可以一条命令重新生成。
+**v2.0.0** 完成系统界面的整体重建：UEG 雷达监控、550A 数字生命模拟、太空电梯密钥闸机与 550W 金属外壳光学传感器。**v2.0.1** 修复不同分辨率下的布局、MOSS 状态被负载定时器覆盖、节点清单末行裁切等问题，并新增 `--capture-size`。
 
 ## 设计依据
 
@@ -86,6 +86,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\smoke-test.ps1
 |------|------|
 | `--skip-boot` | 跳过 4 阶段开机自检，直接进入主控台 |
 | `--capture [目录]` | 屏幕外渲染全部 7 张页面（6 个功能页 + 自检）为 PNG 后退出；不传目录时输出到可执行文件旁的 `screenshots/` |
+| `--capture-size WxH` | 指定截图尺寸，默认 `1600x1000`；用于低分辨率回归，例如 `--capture-size 1366x768` |
 
 ```powershell
 # 重新生成 README 截图
@@ -137,7 +138,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\smoke-test.ps1
 | **NETWORK** 网络拓扑 | UEG 雷达距离环、19 个接触点、3 座根服务器、扫描扇区、7 步握手（可重跑）与节点清单 |
 | **DIGITAL LIFE** 数字生命 | 550A 模拟图丫丫：左侧数字行为/语音/情绪/场景参数，右侧摄像头识别，底部生命倒计时、暂停键与进度条 |
 | **CRISIS** 危机预测 | 2044 太空电梯 / 2058 月球坠落 / 2075 木星引力 / 2078 太阳氦闪 时间线，自动循环高亮 |
-| **KEY AUTH** 密钥认证 | 北京水下根服务器、180 秒倒计时、数字键盘、密钥 `31415926` 与日志流 |
+| **KEY AUTH** 密钥认证 | 北京水下根服务器、180 场景秒倒计时（10×加速，约 18 秒实机）、数字键盘、密钥 `31415926` 与日志流 |
 | **MOSS DIALOG** 对话 | 5 段式响应（任务分析 / 计算路径 / 资源分配 / 执行预估 / 结果输出），含 5 组预设问答 |
 
 ### 右侧固定面板
@@ -174,7 +175,7 @@ CI 在每次 push / PR 时构建 Debug 与 Release；手动触发 `Build` 工作
 ├── docs/
 │   ├── icon.png
 │   ├── UI_REFERENCE.md            # 影片 UI 规范、来源与重建映射
-│   ├── RELEASE_NOTES_v2.0.0.md
+│   ├── RELEASE_NOTES_v2.0.1.md
 │   └── screenshots/               # --capture 生成，README 使用
 ├── tools/
 │   ├── generate-icon.py           # Pillow 生成多尺寸 .ico
@@ -216,6 +217,7 @@ CI 在每次 push / PR 时构建 Debug 与 Release；手动触发 `Build` 工作
 | 场景 | 要求 |
 |------|------|
 | 运行 Release 单文件 | Windows 10 1809+ / Windows 11 x64；无需安装 .NET |
+| 推荐分辨率 | 1600×1000 及以上；低于该尺寸时由 `Viewbox` 等比缩放 |
 | 源码开发 | Windows + .NET 10 SDK |
 | 生成图标 | Python 3 + Pillow（仅维护者需要） |
 

@@ -3,6 +3,27 @@
 > 按时间倒序排列。格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，
 > 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## v2.0.1 — 2026-11-23
+
+### 修复
+
+- **不同分辨率布局**：主界面外壳固定 1600×1000 设计稿并用 `Viewbox` 等比缩放，1366×768 下不再裁切底部内容。
+- **MOSS 状态被覆盖**：负载定时器只更新 Monitor / Digital Life / Dialog，Crisis 与 Key Auth 的 ALERT 状态不再每 2 秒被重置。
+- **节点清单末行裁切**：节点表行高收紧，SEOUL 等最后一行完整显示。
+- **密钥场景重入日志**：`Start()` 清空上一次的 System Log。
+- **截图模式关闭竞态**：仅关闭仍可见的窗口，避免重复 `Close()`。
+- **无边框窗口边缘**：`ResizeMode=NoResize`，去除最大化窗口的缩放边框伪影。
+
+### 新增
+
+- `--capture-size WxH`：离屏截图尺寸可指定，默认 `1600x1000`，用于低分辨率回归。
+
+### 验证
+
+- `dotnet build` 0 warning / 0 error。
+- 1600×1000 与 1366×768 两套尺寸各 7 张页面截图通过。
+- 单文件 Release 在空目录、无本机 .NET 环境变量下运行通过。
+
 ## v2.0.0 — 2026-11
 
 依据《流浪地球 2》制作手记与影片屏幕重建系统界面。
